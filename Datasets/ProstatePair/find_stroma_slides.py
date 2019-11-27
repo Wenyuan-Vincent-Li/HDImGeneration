@@ -23,6 +23,6 @@ stroma_slides = []
 for i in range(len(filenames)):
     mask = scipy.io.loadmat(os.path.join(maskfolder, filenames[i]))['ATmask']
     if np.all(mask == 0):
-        stroma_slides.append(i)
+        stroma_slides.append(filenames[i])
 
 print(stroma_slides, len(stroma_slides))
