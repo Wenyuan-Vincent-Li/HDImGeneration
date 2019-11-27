@@ -25,4 +25,4 @@ for i in range(len(filenames)):
     if np.all(mask == 0):
         stroma_slides.append(i)
 
-print(stroma_slides)
+print(stroma_slides, len(stroma_slides))
