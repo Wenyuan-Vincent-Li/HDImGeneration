@@ -59,7 +59,6 @@ def display_sementic(image, segmentation_mask, num_classes=int(4),
         masked_image = apply_mask(masked_image, mask, label_colours[label])
 
     masked_image = np.moveaxis(masked_image, 0, 2)
-    print(masked_image.shape)
     ax.imshow(masked_image.astype(np.uint8))
     plt.show()
 
