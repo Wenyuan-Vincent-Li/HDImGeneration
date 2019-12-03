@@ -107,6 +107,7 @@ class BaseOptions():
         self.opt.isTrain = self.isTrain  # train or test
 
         self.opt.device = torch.device("cuda:0" if self.opt.cuda else "cpu")
+        self.opt.noise_amp_init = self.opt.noise_amp
         # str_ids = self.opt.gpu_ids.split(',')
         # self.opt.gpu_ids = []
         # for str_id in str_ids:

@@ -3,6 +3,7 @@ from scipy.ndimage import filters, measurements, interpolation
 from skimage import color
 from math import pi
 import torch
+from PIL import Image
 
 
 def denorm(x):
@@ -19,7 +20,7 @@ def move_to_gpu(t):
     return t
 
 def np2torch(x,opt):
-    if opt.nc_im == 3:
+    if opt.input_nc == 3:
         x = x[:,:,:,None]
         x = x.transpose((3, 2, 0, 1))/255
     else:
@@ -33,19 +34,67 @@ def np2torch(x,opt):
     return x
 
 def torch2uint8(x):
-    x = x[0,:,:,:]
+    # x = x[0,:,:,:]
     x = x.permute((1,2,0))
     x = 255*denorm(x)
     x = x.cpu().numpy()
     x = x.astype(np.uint8)
     return x
+#
+# def labelresize(label, target_width, method = Image.NEAREST):
+#     N, C, ow, oh,  = label.shape
+#     if (ow == target_width):
+#         return label
+#
+#     label_ = []
+#     w = target_width
+#     h = int(target_width * oh / ow)
+#     for i in range(N):
+#         label_curr = torch2PIL(label[i,:,:,:]) ## from torch to PIL image object
+#         label_curr = label_curr.resize((w, h), method)
+#         label_curr = PIL2torch()
+#         label_.append(label_curr)
+#     label = torch.cat(label_, 0)
+#     return label
+#
+# def torch2PIL(x):
+#     x = x.permute((1, 2, 0))
+#     x = x.cpu().numpy()
+#     x = x.astype(np.uint8)
+#     print(x.shape)
+#     x = Image.fromarray(x)
+#     return x
+#
+# def PIL2torch(x):
+#     x = np.array(x)
+#     x = x.transpose((3, 2, 0, 1))
+#     x = torch.from_numpy(x)
+#     x = move_to_gpu(x)
+#     return x
 
+def np2torch(x,opt):
+    if opt.input_nc == 3:
+        x = x[:,:,:,None]
+        x = x.transpose((3, 2, 0, 1))/255
+    else:
+        x = color.rgb2gray(x)
+        x = x[:,:,None,None]
+        x = x.transpose(3, 2, 0, 1)
+    x = torch.from_numpy(x)
+    x = move_to_gpu(x)
+    x = x.type(torch.cuda.FloatTensor)
+    x = norm(x)
+    return x
 
 def imresize(im,scale,opt):
-    #s = im.shape
-    im = torch2uint8(im)
-    im = imresize_in(im, scale_factor=scale)
-    im = np2torch(im,opt)
+    N = im.shape[0]
+    im_ = []
+    for i in range(N):
+        im_curr = torch2uint8(im[i,:,:,:])
+        im_curr = imresize_in(im_curr, scale_factor=scale)
+        im_curr = np2torch(im_curr, opt)
+        im_.append(im_curr)
+    im = torch.cat(im_, 0)
     #im = im[:, :, 0:int(scale * s[2]), 0:int(scale * s[3])]
     return im
 
@@ -232,7 +281,7 @@ def kernel_shift(kernel, sf):
     #    pixels. Default is for odd size to be in the middle of the first pixel and for even sized kernel to be at the
     #    top left corner of the first pixel. that is why different shift size needed between od and even size.
     # Given that these two conditions are fulfilled, we are happy and aligned, the way to test it is as follows:
-    # The input image, when interpolated (regular bicubic) is exactly aligned with ground truth.
+    # The input imagefix_s, when interpolated (regular bicubic) is exactly aligned with ground truth.
 
     # First calculate the current center of mass for the kernel
     current_center_of_mass = measurements.center_of_mass(kernel)
@@ -280,3 +329,12 @@ def lanczos3(x):
 
 def linear(x):
     return (x + 1) * ((-1 <= x) & (x < 0)) + (1 - x) * ((0 <= x) & (x <= 1))
+
+
+
+if __name__=="__main__":
+    # from options.train_options import TrainOptions
+    # opt = TrainOptions().parse()
+    image = ((torch.rand(4, 1, 128, 128) + 1) / 2) * 255
+    output = labelresize(image, 64)
+    print(output.shape)

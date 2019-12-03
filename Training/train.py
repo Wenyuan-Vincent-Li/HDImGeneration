@@ -43,11 +43,11 @@ def train(opt, Gs, Zs, NoiseAmp):
 
         ## TODO: figure out in_s role in draw concat
 
-        # G_curr = functions.reset_grads(G_curr, False)
-        # ## Change all the requires_grads flage to be False. Aviod data copy for evaluations
-        # G_curr.eval()
-        # D_curr = functions.reset_grads(D_curr, False)
-        # D_curr.eval()
+        G_curr = functions.reset_grads(G_curr, False)
+        ## Change all the requires_grads flage to be False. Aviod data copy for evaluations; Avoid the gradients go through to the lower level
+        G_curr.eval()
+        D_curr = functions.reset_grads(D_curr, False)
+        D_curr.eval()
         # TODO: implement eval function and reset_grads
 
         Gs.append(G_curr)

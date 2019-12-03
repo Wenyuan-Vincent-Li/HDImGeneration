@@ -93,6 +93,12 @@ def convert_image_np(inp):
     inp = np.clip(inp,0,1)
     return inp
 
+def reset_grads(model,require_grad):
+    for p in model.parameters():
+        p.requires_grad_(require_grad)
+    return model
+
+
 def save_networks(netG,netD,z,opt):
     torch.save(netG.state_dict(), '%s/netG.pth' % (opt.outf))
     torch.save(netD.state_dict(), '%s/netD.pth' % (opt.outf))
