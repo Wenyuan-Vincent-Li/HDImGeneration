@@ -1,5 +1,5 @@
 import os.path
-from InputPipeline.base_dataset import BaseDataset, get_params, get_transform, normalize
+from InputPipeline.base_dataset import BaseDataset, get_params, get_transform
 from InputPipeline.image_folder import make_dataset
 from PIL import Image
 

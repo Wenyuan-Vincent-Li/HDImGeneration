@@ -1,4 +1,3 @@
-import os
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data
@@ -6,7 +5,7 @@ from Training import functions
 from Training.imresize import imresize
 import matplotlib.pyplot as plt
 
-def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,centers=None):
+def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
     '''
     :param netD: currD
     :param netG: currG
@@ -16,13 +15,12 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
     :param in_s: 0-> all zero [1, 3, 26, 26]
     :param NoiseAmp: [] -> [1]
     :param opt: config
-    :param centers:
     :return:
     '''
 
-    real = reals[len(Gs)] # find the current level image xn
-    opt.nzx = real.shape[2] #+(opt.ker_size-1)*(opt.num_layer)
-    opt.nzy = real.shape[3] #+(opt.ker_size-1)*(opt.num_layer)
+    real = reals[opt.scale_num] # find the current level image xn
+    opt.nzx = real[0] #+(opt.ker_size-1)*(opt.num_layer)
+    opt.nzy = real[1] #+(opt.ker_size-1)*(opt.num_layer)
     opt.receptive_field = opt.ker_size + ((opt.ker_size-1)*(opt.num_layer-1))*opt.stride
     pad_noise = int(((opt.ker_size - 1) * opt.num_layer) / 2) # 5
     pad_image = int(((opt.ker_size - 1) * opt.num_layer) / 2) # 5
@@ -34,9 +32,9 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
     alpha = opt.alpha # 10
 
     fixed_noise = functions.generate_noise([opt.nc_z, opt.nzx, opt.nzy], num_samp = opt.batchSize)
-    ## Notice that the gererated noise has 3 channels [3, 26, 26]
-    z_opt = torch.full(fixed_noise.shape, 0, device=opt.device) ## z_opt is now all zero [1, 3, 26, 26]
-    z_opt = m_noise(z_opt) ## z_opt is now [1, 3, 36, 36] -> [1, 3, 43, 43]
+    ## Notice that the gererated noise has 3 channels [3, 32, 32]
+    z_opt = torch.full(fixed_noise.shape, 0, device=opt.device) ## z_opt is now all zero [None, 3, 32, 32]
+    z_opt = m_noise(z_opt) ## z_opt is now [None, 3, 42, 42]
 
     # setup optimizer
     optimizerD = optim.Adam(netD.parameters(), lr=opt.lr_d, betas=(opt.beta1, 0.999))
@@ -50,24 +48,28 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
     D_fake2plot = []
     z_opt2plot = []
 
-    for epoch in range(opt.epoches): # niter = 2000
+
+    for epoch in range(opt.niter): # niter = 2000
         if Gs == []:
-            z_opt = functions.generate_noise([opt.batchSize,opt.nzx,opt.nzy]) # [1, 1, 26, 26] ## Generated Gaussian Noise
-            z_opt = m_noise(z_opt.expand(opt.batchSize,3,opt.nzx,opt.nzy)) # [1, 3, 36, 36]
-            noise_ = functions.generate_noise([opt.batchSize,opt.nzx,opt.nzy]) # [1, 1, 26, 26]
-            noise_ = m_noise(noise_.expand(opt.batchSize,3,opt.nzx,opt.nzy)) # [1, 3, 36, 36]
+            z_opt = functions.generate_noise([1,opt.nzx,opt.nzy], opt.batchSize) # [None, 1, 32, 32] ## Generated Gaussian Noise
+            z_opt = m_noise(z_opt.expand(opt.batchSize,3,opt.nzx,opt.nzy)) # [None, 3, 42, 42]
+            noise_ = functions.generate_noise([1,opt.nzx,opt.nzy], opt.batchSize) # [None, 1, 32, 32]
+            noise_ = m_noise(noise_.expand(opt.batchSize,3,opt.nzx,opt.nzy)) # [None, 3, 42, 42]
+            ## Noise_: for generated false samples and input them to discriminator
         else:
             noise_ = functions.generate_noise([opt.batchSize,opt.nzx,opt.nzy])
             noise_ = m_noise(noise_) # scale = 1, noise_ [1, 3, 43, 43]
 
         for j, data in enumerate(dataloader):
+            data['image'] = data['image'].to(opt.device)
+            data['label'] = data['label'].to(opt.device)
             ############################
             # (1) Update D network: maximize D(x) + D(G(z))
             ###########################
 
             # train with real
             netD.zero_grad()
-            output = netD(data['image'], data['label']).to(opt.device) # real [1, 3, 26, 26] -> output [1, 1, 16, 16]
+            output = netD(data['image'], data['label']).to(opt.device) # real [None, 3, 32, 32] -> output [None, 1, 22, 22]
             errD_real = -output.mean() #-a W-GAN loss
             errD_real.backward(retain_graph=True)
             D_x = -errD_real.item()
@@ -75,11 +77,12 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
             # train with fake
             if (j==0) & (epoch == 0): # first iteration training in this level
                 if Gs == []:
-                    prev = torch.full([1,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
-                    in_s = prev # full of 0 [1, 3, 26, 26]
-                    prev = m_image(prev) #[1, 3, 36, 36]
-                    z_prev = torch.full([1,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
-                    z_prev = m_noise(z_prev) #[1, 3, 36, 36]
+                    prev = torch.full([opt.batchSize,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
+                    in_s = prev # full of 0 [None, 3, 32, 32]
+                    prev = m_image(prev) #[None, 3, 42, 42]
+                    z_prev = torch.full([opt.batchSize,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
+                    z_prev = m_noise(z_prev) # [None, 3, 42, 42]
+                    mask = m_image(data['label']) # [None, 3, 42, 42]
                     opt.noise_amp = 1
                 else:
                     prev = draw_concat(Gs, Zs, data['label'], reals, NoiseAmp, in_s, 'rand', m_noise, m_image, opt)
@@ -92,49 +95,48 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
                     RMSE = torch.sqrt(criterion(data['image'], z_prev))
                     opt.noise_amp = opt.noise_amp_init*RMSE
                     z_prev = m_image(z_prev) ## [1, 3, 43, 43]
+                    mask = m_image(data['label'])
             else:
                 prev = draw_concat(Gs, Zs, data['label'], reals, NoiseAmp, in_s, 'rand', m_noise, m_image, opt)
                 ## Sample another image generated by the previous generator
                 prev = m_image(prev)
+                mask = m_image(data['label'])
 
             if Gs == []:
-                noise = noise_
+                noise = noise_ ## Gausiaan noise for generating image [None, 3, 42, 42]
             else:
-                noise = opt.noise_amp * noise_+ prev ## [1, 3, 43, 43] new noise is equal to the prev generated image plus the gaussian noise.
+                noise = opt.noise_amp * noise_+ prev ## [None, 3, 43, 43] new noise is equal to the prev generated image plus the gaussian noise.
 
-            fake = netG(noise.detach(), prev)
+            fake = netG(noise.detach(), prev, mask) # [None, 3, 32, 32] the same size with the input image
             # detach() make sure that the gradients don't go to the noise.
-            # noise:[1, 3, 36, 36] -> [1, 3, 43, 43]
-            # prev:[1, 3, 36, 36] -> [1, 3, 43, 43] first step prev = 0, second step prev = a image generated by previous Generator with bilinaer upsampling
-
-            # fake shape [1, 3, 26, 26] -> [1, 3, 33, 33]
-            output = netD(fake.detach()) # output shape [1, 1, 16, 16] -> [1, 1, 23, 23]
+            # prev:[None, 3, 42, 42] -> [None, 3, 43, 43] first step prev = 0, second step prev = a image generated by previous Generator with bilinaer upsampling
+            output = netD(fake.detach(), data['label']) # output shape [1, 1, 16, 16] -> [1, 1, 23, 23]
             errD_fake = output.mean()
             errD_fake.backward(retain_graph=True)
             D_G_z = output.mean().item()
 
-            gradient_penalty = functions.calc_gradient_penalty(netD, real, fake, opt.lambda_grad)
+            gradient_penalty = functions.calc_gradient_penalty(netD, data['image'], fake, data['label'], opt.lambda_grad)
             gradient_penalty.backward()
-
             errD = errD_real + errD_fake + gradient_penalty
             optimizerD.step()
 
             errD2plot.append(errD.detach()) ## errD for each iteration
 
+
             ############################
             # (2) Update G network: maximize D(G(z))
             ###########################
             netG.zero_grad()
-            output = netD(fake)
+            output = netD(fake, data['label'])
             #D_fake_map = output.detach()
             errG = -output.mean() # Generator want to make output as large as possible.
             errG.backward(retain_graph=True)
-            if alpha!=0: ## alpha = 10
+            if alpha!=0: ## alpha = 10 calculate the reconstruction loss
                 loss = nn.MSELoss()
                 Z_opt = opt.noise_amp * z_opt + z_prev
                 ## for the first scale z_prev = 0, z_opt = gausian noise, opt.noise_amp = 1 [1, 3, 36, 36]
                 ## for the second scale z_prev image generated by Gn, z_opt is all zeros [1, 3, 43, 43]
-                rec_loss = alpha * loss(netG(Z_opt.detach(), z_prev, data['label']), data['image'])
+                rec_loss = alpha * loss(netG(Z_opt.detach(), z_prev, mask), data['image'])
                 rec_loss.backward(retain_graph = True)
                 rec_loss = rec_loss.detach()
             else:
@@ -143,17 +145,18 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
 
             optimizerG.step()
 
+        ## for every epoch, do the following:
         errG2plot.append(errG.detach()+rec_loss) ## ErrG for each iteration
         D_real2plot.append(D_x) ##  discriminator loss on real
         D_fake2plot.append(D_G_z) ## discriminator loss on fake
         z_opt2plot.append(rec_loss) ## reconstruction loss
+        if epoch % 5 == 0 or epoch == (opt.niter-1):
+            print('scale %d:[%d/%d]' % (opt.scale_num, epoch, opt.niter))
 
-        if epoch % 25 == 0 or epoch == (opt.niter-1):
-            print('scale %d:[%d/%d]' % (len(Gs), epoch, opt.niter))
-
-        if epoch % 500 == 0 or epoch == (opt.niter-1):
+        if epoch % 5 == 0 or epoch == (opt.niter-1):
             plt.imsave('%s/fake_sample.png' %  (opt.outf), functions.convert_image_np(fake.detach()), vmin=0, vmax=1)
-            plt.imsave('%s/G(z_opt).png'    % (opt.outf),  functions.convert_image_np(netG(Z_opt.detach(), z_prev).detach()), vmin=0, vmax=1)
+            plt.imsave('%s/G(z_opt).png'    % (opt.outf),  functions.convert_image_np(netG(Z_opt.detach(), z_prev, mask).detach()), vmin=0, vmax=1)
+            plt.imsave('%s/real_scale.png' % (opt.outf), functions.convert_image_np(data['image']), vmin=0, vmax=1)
             #plt.imsave('%s/D_fake.png'   % (opt.outf), functions.convert_image_np(D_fake_map))
             #plt.imsave('%s/D_real.png'   % (opt.outf), functions.convert_image_np(D_real_map))
             #plt.imsave('%s/z_opt.png'    % (opt.outf), functions.convert_image_np(z_opt.detach()), vmin=0, vmax=1)
@@ -167,7 +170,6 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,center
         schedulerD.step()
         schedulerG.step()
 
-    ## Todo: before saving networks, go through all the mask
     functions.save_networks(netG,netD,z_opt,opt) ## save netG, netD, z_opt, opt is used to parser output path
     return z_opt,in_s,netG
     # first scale z_opt: generated Gaussion noise [1, 3, 36, 36], in_s = all 0 [1, 3, 26, 26] netG: generator
@@ -193,28 +195,30 @@ def draw_concat(Gs,Zs,mask,reals,NoiseAmp,in_s,mode,m_noise,m_image,opt):
             pad_noise = int(((opt.ker_size-1)*opt.num_layer)/2)
             for G,Z_opt,real_curr,real_next,noise_amp in zip(Gs,Zs,reals,reals[1:],NoiseAmp):
                 if count == 0:
-                    z = functions.generate_noise([opt.batchSize, Z_opt.shape[2] - 2 * pad_noise, Z_opt.shape[3] - 2 * pad_noise])
+                    z = functions.generate_noise([1, Z_opt.shape[2] - 2 * pad_noise, Z_opt.shape[3] - 2 * pad_noise], opt.batchSize)
                     z = z.expand(opt.batchSize, 3, z.shape[2], z.shape[3])
                 else:
-                    z = functions.generate_noise([opt.nc_z,Z_opt.shape[2] - 2 * pad_noise, Z_opt.shape[3] - 2 * pad_noise])
+                    z = functions.generate_noise([opt.nc_z,Z_opt.shape[2] - 2 * pad_noise, Z_opt.shape[3] - 2 * pad_noise], opt.batchSize)
                 ## z [1, 3, 26, 26]
                 z = m_noise(z) ## z [1, 3, 36, 36]
-                G_z = G_z[:,:,0:real_curr.shape[2],0:real_curr.shape[3]] ## G_z [1, 3, 26, 26]
+                G_z = G_z[:,:,0:real_curr[0],0:real_curr[1]] ## G_z [1, 3, 26, 26]
                 G_z = m_image(G_z) ## G_z [1, 3, 36, 36] all zeros
                 z_in = noise_amp*z+G_z ## [1, 3, 36, 36] Gaussian noise
+
+                ## TODO: check the size of noise and mask
                 G_z = G(z_in.detach(),G_z, mask) ## [1, 3, 26, 26] output of previous generator
                 G_z = imresize(G_z,1/opt.scale_factor,opt) ## output upsampling (bilinear) [1, 3, 34, 34]
-                G_z = G_z[:,:,0:real_next.shape[2],0:real_next.shape[3]] ## resize the image to be compatible with current G [1, 3, 33, 33]
+                G_z = G_z[:,:,0:real_next[0],0:real_next[1]] ## resize the image to be compatible with current G [1, 3, 33, 33]
                 count += 1
         if mode == 'rec':
             count = 0
             for G,Z_opt,real_curr,real_next,noise_amp in zip(Gs,Zs,reals,reals[1:],NoiseAmp):
-                G_z = G_z[:, :, 0:real_curr.shape[2], 0:real_curr.shape[3]] ## [1, 3, 26, 26] all zeros
+                G_z = G_z[:, :, 0:real_curr[0], 0:real_curr[1]] ## [1, 3, 26, 26] all zeros
                 G_z = m_image(G_z) ## [1, 3, 36, 36] all zeros
                 z_in = noise_amp*Z_opt+G_z  ## [1, 3, 36, 36] @ scale 1, it's scale 0's fixed gaussian
                 G_z = G(z_in.detach(),G_z, mask) ## [1, 3, 26, 26]
                 G_z = imresize(G_z,1/opt.scale_factor,opt) ## [1, 3, 34, 34]
-                G_z = G_z[:,:,0:real_next.shape[2],0:real_next.shape[3]]  ## [1, 3, 33, 33]
+                G_z = G_z[:,:,0:real_next[0],0:real_next[1]]  ## [1, 3, 33, 33]
                 #if count != (len(Gs)-1):
                 #    G_z = m_image(G_z)
                 count += 1

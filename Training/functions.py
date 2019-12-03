@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import math
 
 def generate_noise(size,num_samp=1,device='cuda',type='gaussian', scale=1):
     if type == 'gaussian':
@@ -27,3 +28,81 @@ def generate_noise(size,num_samp=1,device='cuda',type='gaussian', scale=1):
 def upsampling(im,sx,sy):
     m = nn.Upsample(size=[round(sx),round(sy)],mode='bilinear',align_corners=True)
     return m(im)
+
+def create_reals_pyramid(real_shape, reals, opt):
+    w, h = real_shape
+    for i in range(0, opt.stop_scale + 1, 1):
+        scale = math.pow(opt.scale_factor, opt.stop_scale - i)
+        curr_real = [math.floor(w * scale), math.floor(h * scale)]
+        reals.append(curr_real)
+    return reals
+
+def calc_gradient_penalty(netD, real_data, fake_data, mask, LAMBDA): # Notice that gradient penalty only works in D's loss function
+    #print real_data.size()
+    alpha = torch.rand(1, 1)
+    alpha = alpha.expand(real_data.size())
+    alpha = alpha.cuda() #gpu) #if use_cuda else alpha
+
+    interpolates = alpha * real_data + ((1 - alpha) * fake_data)
+
+
+    interpolates = interpolates.cuda()
+    interpolates = torch.autograd.Variable(interpolates, requires_grad=True)
+
+    disc_interpolates = netD(interpolates, mask)
+
+    gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolates,
+                              grad_outputs=torch.ones(disc_interpolates.size()).cuda(), #if use_cuda else torch.ones(
+                                  #disc_interpolates.size()),
+                              create_graph=True, retain_graph=True, only_inputs=True)[0]
+    #LAMBDA = 1
+    gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * LAMBDA
+    return gradient_penalty
+
+def generate_dir2save(opt):
+    dir2save = None
+    if (opt.isTrain):
+        dir2save = 'TrainedModels/%s/scale_factor=%.2f,alpha=%d' % (opt.name, opt.scale_factor,opt.alpha)
+    # elif opt.mode == 'random_samples':
+    #     dir2save = '%s/RandomSamples/%s/gen_start_scale=%d' % (opt.out,opt.input_name[:-4], opt.gen_start_scale)
+    # elif opt.mode == 'random_samples_arbitrary_sizes':
+    #     dir2save = '%s/RandomSamples_ArbitrerySizes/%s/scale_v=%f_scale_h=%f' % (opt.out,opt.input_name[:-4], opt.scale_v, opt.scale_h)
+    return dir2save
+
+def denorm(x):
+    out = (x + 1) / 2
+    return out.clamp(0, 1)
+
+def move_to_cpu(t):
+    t = t.to(torch.device('cpu'))
+    return t
+
+
+def convert_image_np(inp):
+    if inp.shape[1]==3:
+        inp = denorm(inp)
+        inp = move_to_cpu(inp[-1,:,:,:])
+        inp = inp.numpy().transpose((1,2,0))
+    else:
+        inp = denorm(inp)
+        inp = move_to_cpu(inp[-1,-1,:,:])
+        inp = inp.numpy().transpose((0,1))
+        # mean = np.array([x/255.0 for x in [125.3,123.0,113.9]])
+        # std = np.array([x/255.0 for x in [63.0,62.1,66.7]])
+
+    inp = np.clip(inp,0,1)
+    return inp
+
+def save_networks(netG,netD,z,opt):
+    torch.save(netG.state_dict(), '%s/netG.pth' % (opt.outf))
+    torch.save(netD.state_dict(), '%s/netD.pth' % (opt.outf))
+    torch.save(z, '%s/z_opt.pth' % (opt.outf))
+
+if __name__ == "__main__":
+    from utils import *
+    from options.train_options import TrainOptions
+    opt = TrainOptions().parse()
+    real_shape = [1024, 1024]
+    reals = []
+    reals = create_reals_pyramid(real_shape, reals, opt)
+    print(reals)

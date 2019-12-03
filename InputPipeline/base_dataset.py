@@ -44,6 +44,9 @@ def get_transform(opt, params, method=Image.BICUBIC, normalize=True):
         transform_list.append(transforms.Lambda(lambda img: __horizontal_flip(img, params['horizontal_flip'])))
         transform_list.append(transforms.Lambda(lambda img: __vertical_flip(img, params['vertical_flip'])))
         transform_list.append(transforms.Lambda(lambda img: __rotate(img, params['rotation'])))
+    if opt.isTrain:
+        ## Finally scale down to the current levle
+        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.reals[opt.scale_num][0], method)))
 
     transform_list += [transforms.ToTensor()]
 

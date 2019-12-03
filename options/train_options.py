@@ -20,6 +20,17 @@ class TrainOptions(BaseOptions):
         # self.parser.add_argument('--niter_decay', type=int, default=100, help='# of iter to linearly decay learning rate to zero')
         # self.parser.add_argument('--beta1', type=float, default=0.5, help='momentum term of adam')
         # self.parser.add_argument('--lr', type=float, default=0.0002, help='initial learning rate for adam')
+        # optimization hyper parameters:
+        self.parser.add_argument('--niter', type=int, default=5, help='number of epochs to train per scale')
+        self.parser.add_argument('--gamma', type=float, help='scheduler gamma', default=0.1)
+        self.parser.add_argument('--lr_g', type=float, default=0.0005, help='learning rate, default=0.0005')
+        self.parser.add_argument('--lr_d', type=float, default=0.0005, help='learning rate, default=0.0005')
+        self.parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
+        self.parser.add_argument('--Gsteps', type=int, help='Generator inner steps', default=3)
+        self.parser.add_argument('--Dsteps', type=int, help='Discriminator inner steps', default=3)
+        self.parser.add_argument('--lambda_grad', type=float, help='gradient penelty weight', default=0.1)
+        self.parser.add_argument('--alpha', type=float, help='reconstruction loss weight', default=10)
+
 
         # for discriminators
         # self.parser.add_argument('--num_D', type=int, default=2, help='number of discriminators to use')
