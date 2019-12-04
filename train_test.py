@@ -9,5 +9,5 @@ opt = TrainOptions().parse()
 Gs = []
 Zs = []
 NoiseAmp = []
-
+# opt.alpha = 0 ## Not to use reconstruction loss
 train(opt, Gs, Zs, NoiseAmp)
