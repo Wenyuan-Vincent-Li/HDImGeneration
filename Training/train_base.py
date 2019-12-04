@@ -157,7 +157,7 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
         D_real2plot.append(D_x) ##  discriminator loss on real
         D_fake2plot.append(D_G_z) ## discriminator loss on fake
         z_opt2plot.append(rec_loss) ## reconstruction loss
-        if epoch % 2 == 0 or epoch == (opt.niter-1):
+        if epoch % 25 == 0 or epoch == (opt.niter-1):
             print('scale %d:[%d/%d]' % (opt.scale_num, epoch, opt.niter))
 
         if epoch % 50 == 0 or epoch == (opt.niter-1):
