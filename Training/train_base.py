@@ -195,7 +195,7 @@ def draw_concat(Gs,Zs,mask,maskTransforms, reals,NoiseAmp,in_s,mode,m_noise,m_im
     :param opt:
     :return:
     '''
-    G_z = in_s #[1, 3, 26, 26] all zeros, image input for the corest level
+    G_z = in_s[:opt.batchSize,:,:,:] #[None, 3, 26, 26] all zeros, image input for the corest level
     if len(Gs) > 0:
         if mode == 'rand':
             count = 0
@@ -223,8 +223,9 @@ def draw_concat(Gs,Zs,mask,maskTransforms, reals,NoiseAmp,in_s,mode,m_noise,m_im
         if mode == 'rec':
             count = 0
             for G,Z_opt,maskTransform,real_curr,real_next,noise_amp in zip(Gs,Zs,reversed(maskTransforms), reals,reals[1:],NoiseAmp):
+                Z_opt = Z_opt[:opt.batchSize,:,:,:]
                 G_z = G_z[:, :, 0:real_curr[0], 0:real_curr[1]] ## [1, 3, 26, 26] all zeros
-                G_z = m_image(G_z) ## [1, 3, 36, 36] all zeros
+                G_z = m_image(G_z) ## [None, 3, 36, 36] all zeros
                 z_in = noise_amp*Z_opt+G_z  ## [1, 3, 36, 36] @ scale 1, it's scale 0's fixed gaussian
                 mask_curr = maskTransform(mask)
                 mask_curr = m_image(mask_curr)
