@@ -8,11 +8,13 @@ from Training import functions
 def train(opt, Gs, Zs, NoiseAmp):
     in_s = 0
     reals = []
+    batchSize = [256, 256, 128, 32, 8]
     opt.scale_num = len(Gs)
     opt.reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
     nfc_prev = 0
 
     while opt.scale_num < opt.stop_scale + 1:
+        opt.batchSize = batchSize[opt.scale_num]
         ## create the dataloader at this scale
         ## TODO: for the draw concat function, you have to imresize the image to lower scale
         data_loader = CreateDataLoader(opt)
@@ -22,7 +24,6 @@ def train(opt, Gs, Zs, NoiseAmp):
 
         opt.out_ = functions.generate_dir2save(opt)  # TrainedModels/path_01/scale_factor=0.750000,alpha=10
         opt.outf = '%s/%d' % (opt.out_, opt.scale_num)  # TrainedModels/path_01/scale_factor=0.750000,alpha=10/0
-
         try:
             os.makedirs(opt.outf)  ## Create a folder to save the image, and trained network
         except OSError:
