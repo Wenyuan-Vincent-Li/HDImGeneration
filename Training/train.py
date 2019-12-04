@@ -8,7 +8,7 @@ from Training import functions
 def train(opt, Gs, Zs, NoiseAmp):
     in_s = 0
     reals = []
-    batchSize = [64, 64, 64, 32, 8]
+    batchSize = [8, 8, 8, 8, 8]
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
     opt.reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
