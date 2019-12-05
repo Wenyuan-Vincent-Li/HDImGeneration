@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import math
+import os
 
 def generate_noise(size,num_samp=1,device='cuda',type='gaussian', scale=1):
     if type == 'gaussian':
@@ -103,6 +104,24 @@ def save_networks(netG,netD,z,opt):
     torch.save(netG.state_dict(), '%s/netG.pth' % (opt.outf))
     torch.save(netD.state_dict(), '%s/netD.pth' % (opt.outf))
     torch.save(z, '%s/z_opt.pth' % (opt.outf))
+
+
+def load_trained_pyramid(opt):
+    #dir = 'TrainedModels/%s/scale_factor=%f' % (opt.input_name[:-4], opt.scale_factor_init)
+    # mode = opt.mode
+    # opt.mode = 'train'
+    # if (mode == 'animation_train') | (mode == 'SR_train') | (mode == 'paint_train'):
+    #     opt.mode = mode
+    dir = generate_dir2save(opt)
+    if(os.path.exists(dir)):
+        Gs = torch.load('%s/Gs.pth' % dir)
+        Zs = torch.load('%s/Zs.pth' % dir)
+        reals = torch.load('%s/reals.pth' % dir)
+        NoiseAmp = torch.load('%s/NoiseAmp.pth' % dir)
+    else:
+        print('no appropriate trained model is exist, please train first')
+    # opt.mode = mode
+    return Gs,Zs,reals,NoiseAmp
 
 if __name__ == "__main__":
     from utils import *

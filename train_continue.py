@@ -3,10 +3,7 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-Gs = []
-Zs = []
-NoiseAmp = []
-reals = []
-reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
-opt.alpha = 5 ## Not to use reconstruction loss
+opt.alpha = 10 ## Not to use reconstruction loss
+
+Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
 train(opt, Gs, Zs, NoiseAmp, reals)

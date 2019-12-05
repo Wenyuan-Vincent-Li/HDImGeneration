@@ -5,14 +5,17 @@ from Models.model import init_models
 from Training.train_base import train_single_scale
 from Training import functions
 
-def train(opt, Gs, Zs, NoiseAmp):
-    in_s = 0
-    reals = []
+def train(opt, Gs, Zs, NoiseAmp, reals):
     batchSize = [8, 8, 8, 8, 8]
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
-    opt.reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
-    nfc_prev = 0
+    opt.reals = reals
+    if opt.scale_num > 0:
+        nfc_prev = opt.nfc
+        in_s = torch.full([opt.batchSize,opt.nc_z,opt.reals[opt.scale_num][0],opt.reals[opt.scale_num][1]], 0, device=opt.device)
+    else:
+        nfc_prev = 0
+        in_s = 0
 
     while opt.scale_num < opt.stop_scale + 1:
         opt.batchSize = batchSize[opt.scale_num]
