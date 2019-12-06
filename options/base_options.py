@@ -29,7 +29,7 @@ class BaseOptions():
         # input/output sizes
         self.parser.add_argument('--batchSize', type=int, default=8, help='input batch size')
         self.parser.add_argument('--randomScale', action='store_false', default=True, help='whether to do random scale before crop')
-        self.parser.add_argument('--fineSize', type=int, default=512, help='then crop to this size')
+        self.parser.add_argument('--fineSize', type=int, default=128, help='then crop to this size')
         self.parser.add_argument('--label_nc', type=int, default=4, help='# of input label channels')
         self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
         self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
@@ -42,7 +42,7 @@ class BaseOptions():
                                  help='if true, takes images in order to make batches, otherwise takes them randomly')
         self.parser.add_argument('--no_flip', action='store_true',
                                  help='if specified, do not flip the images for data argumentation')
-        self.parser.add_argument('--nThreads', default=30, type=int, help='# threads for loading data')
+        self.parser.add_argument('--nThreads', default=4, type=int, help='# threads for loading data')
         self.parser.add_argument('--max_dataset_size', type=int, default=float("inf"),
                                  help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
 
@@ -52,8 +52,8 @@ class BaseOptions():
                                  help='if specified, use tensorboard logging. Requires tensorflow installed')
 
         # pyramid parameters:
-        self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.5)  # pow(0.5,1/6))
-        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=4)  # pow(0.5,1/6))
+        self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.9)  # pow(0.5,1/6))
+        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=2)  # pow(0.5,1/6))
         self.parser.add_argument('--noise_amp', type=float, help='addative noise cont weight', default=0.1)
         # self.parser.add_argument('--min_size', type=int, help='image minimal size at the coarser scale', default=25)
         # self.parser.add_argument('--max_size', type=int, help='image maximal size at the finest scale', default=256)

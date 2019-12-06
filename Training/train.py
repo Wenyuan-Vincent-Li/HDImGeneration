@@ -6,7 +6,7 @@ from Training.train_base import train_single_scale
 from Training import functions
 
 def train(opt, Gs, Zs, NoiseAmp, reals):
-    batchSize = [8, 8, 8, 8, 8]
+    batchSize = [2, 2, 2, 2, 2]
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
     opt.reals = reals
