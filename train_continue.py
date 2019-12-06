@@ -3,7 +3,7 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.alpha = 10 ## Not to use reconstruction loss
+opt.alpha = 5 ## Not to use reconstruction loss
 
 Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
 
