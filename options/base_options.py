@@ -1,6 +1,7 @@
 import argparse
 import os
 from utils import check_folder_exists
+from InputPipeline.image_folder import make_dataset
 import torch
 
 
@@ -108,6 +109,9 @@ class BaseOptions():
 
         self.opt.device = torch.device("cuda:0" if self.opt.cuda else "cpu")
         self.opt.noise_amp_init = self.opt.noise_amp
+        dir_A = '_label'
+        self.opt.num_images = len(make_dataset(os.path.join(self.opt.dataroot, self.opt.phase + dir_A)))
+
         # str_ids = self.opt.gpu_ids.split(',')
         # self.opt.gpu_ids = []
         # for str_id in str_ids:

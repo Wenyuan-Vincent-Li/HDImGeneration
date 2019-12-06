@@ -8,6 +8,8 @@ Zs = []
 NoiseAmp = []
 reals = []
 reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
-print(reals)
-opt.alpha = 9 ## Not to use reconstruction loss
+
+print(reals, opt.num_images)
+exit()
+opt.alpha = 10 ## Not to use reconstruction loss
 train(opt, Gs, Zs, NoiseAmp, reals)
