@@ -6,7 +6,7 @@ from Training.train_base import train_single_scale
 from Training import functions
 
 def train(opt, Gs, Zs, NoiseAmp, reals):
-    batchSize = [2, 2, 2, 2, 2]
+    batchSize = [8, 8, 8, 8, 8]
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
     opt.reals = reals
@@ -20,7 +20,6 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
     while opt.scale_num < opt.stop_scale + 1:
         opt.batchSize = batchSize[opt.scale_num]
         ## create the dataloader at this scale
-        ## TODO: for the draw concat function, you have to imresize the image to lower scale
         data_loader = CreateDataLoader(opt)
         dataset = data_loader.load_data()
         dataset_size = len(data_loader)

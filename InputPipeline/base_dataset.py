@@ -35,6 +35,11 @@ def get_params(opt, size):
             'vertical_flip': vertical_flip, 'rotation': rotation, 'center_crop_pos': (x_c, y_c)}
 
 
+def get_downscale_transform(scale_width_target, method=Image.NEAREST):
+    transform_list = []
+    transform_list.append(transforms.Lambda(lambda img: __scale_width(img, scale_width_target, method)))
+    return transforms.Compose(transform_list)
+
 def get_transform(opt, params, method=Image.BICUBIC, normalize=True, fixed = False):
     transform_list = []
 
@@ -56,9 +61,8 @@ def get_transform(opt, params, method=Image.BICUBIC, normalize=True, fixed = Fal
         ## Finally scale down to the current levle
         transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.reals[opt.scale_num][0], method)))
 
-    transform_list += [transforms.ToTensor()]
-
     if normalize:
+        transform_list += [transforms.ToTensor()]
         transform_list += [transforms.Normalize((0.5, 0.5, 0.5),
                                                 (0.5, 0.5, 0.5))]
     return transforms.Compose(transform_list)

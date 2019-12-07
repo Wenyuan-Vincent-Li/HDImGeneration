@@ -1,7 +1,8 @@
 import os.path
-from InputPipeline.base_dataset import BaseDataset, get_params, get_transform
+from InputPipeline.base_dataset import BaseDataset, get_params, get_transform, get_downscale_transform
 from InputPipeline.image_folder import make_dataset
 from PIL import Image
+import torchvision.transforms as transforms
 
 
 class AlignedDataset(BaseDataset):
@@ -31,7 +32,15 @@ class AlignedDataset(BaseDataset):
 
         # ## Do data augmentation here
         transform_A = get_transform(self.opt, params, method=Image.NEAREST, normalize=False, fixed=self.fixed)
-        A_tensor = transform_A(A) * 255.0
+        transform_A_toTensor = transforms.ToTensor()
+        A_temp = transform_A(A)
+        A_tensor = transform_A_toTensor(A_temp) * 255.0
+
+        down_scale_label = []
+        for i in range(self.opt.scale_num):
+            down_scale_transform_A = get_downscale_transform(self.opt.reals[i][0], method=Image.NEAREST)
+            A_curr = down_scale_transform_A(A_temp)
+            down_scale_label.append(transform_A_toTensor(A_curr) * 255.0)
 
         B_tensor = 0
         ### input B (real images)
@@ -41,7 +50,7 @@ class AlignedDataset(BaseDataset):
             transform_B = get_transform(self.opt, params, fixed=self.fixed)
             B_tensor = transform_B(B)
 
-        input_dict = {'label': A_tensor, 'image': B_tensor, 'path': A_path}
+        input_dict = {'label': A_tensor, 'image': B_tensor, 'path': A_path, 'down_scale_label': down_scale_label}
         return input_dict
 
     def __len__(self):
