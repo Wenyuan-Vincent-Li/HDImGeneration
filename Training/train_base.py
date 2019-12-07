@@ -175,11 +175,13 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
                 z_opt_temp = z_opt[left:right,:,:,:]
                 fixed_image_temp = fixed_data['image'][left:right,:,:,:]
                 fixed_mask_temp = fixed_data['label'][left:right,:,:,:]
+                fixed_mask_temp = m_image(fixed_mask_temp)
             else:
                 z_opt_temp = torch.cat((z_opt[left:, :, :, :], z_opt[:right, :, :, :]), dim=0)
                 fixed_image_temp = torch.cat((fixed_data['image'][left:, :, :, :], fixed_data['image'][:right, :, :, :]), dim=0)
                 fixed_mask_temp = torch.cat((fixed_data['label'][left:, :, :, :], fixed_data['label'][:right, :, :, :]), dim=0)
-
+                fixed_mask_temp = m_image(fixed_mask_temp)
+            
             if alpha!=0: ## alpha = 10 calculate the reconstruction loss
                 loss = nn.MSELoss()
                 Z_opt = opt.noise_amp * z_opt_temp + z_prev
