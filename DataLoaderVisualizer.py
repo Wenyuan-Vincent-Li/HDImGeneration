@@ -19,8 +19,8 @@ if __name__ == "__main__":
     # print(data['path'])
     # print(np.unique(data['label']))
     # display_sementic((data['image'][0, ...].numpy() + 1 )/ 2 * 255, data['label'][0,0,...].numpy())
-    # opt.num_images
-    fixed_data_loader = CreateDataLoader(opt, batchSize=409, shuffle=False, fixed=True)
+    #
+    fixed_data_loader = CreateDataLoader(opt, batchSize=opt.num_images, shuffle=False, fixed=True)
     dataset = fixed_data_loader.load_data()
 
     data = next(iter(dataset))
