@@ -21,7 +21,7 @@ class TrainOptions(BaseOptions):
         # self.parser.add_argument('--beta1', type=float, default=0.5, help='momentum term of adam')
         # self.parser.add_argument('--lr', type=float, default=0.0002, help='initial learning rate for adam')
         # optimization hyper parameters:
-        self.parser.add_argument('--niter', type=int, default=2000, help='number of epochs to train per scale')
+        self.parser.add_argument('--niter', type=int, default=5, help='number of epochs to train per scale')
         self.parser.add_argument('--gamma', type=float, help='scheduler gamma', default=0.1)
         self.parser.add_argument('--lr_g', type=float, default=0.0005, help='learning rate, default=0.0005')
         self.parser.add_argument('--lr_d', type=float, default=0.0005, help='learning rate, default=0.0005')

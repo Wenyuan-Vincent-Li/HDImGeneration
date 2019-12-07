@@ -5,7 +5,8 @@ from PIL import Image
 
 
 class AlignedDataset(BaseDataset):
-    def initialize(self, opt):
+    def initialize(self, opt, fixed=False):
+        self.fixed = fixed
         self.opt = opt
         self.root = opt.dataroot
 
@@ -29,7 +30,7 @@ class AlignedDataset(BaseDataset):
         params = get_params(self.opt, A.size)
 
         # ## Do data augmentation here
-        transform_A = get_transform(self.opt, params, method=Image.NEAREST, normalize=False)
+        transform_A = get_transform(self.opt, params, method=Image.NEAREST, normalize=False, fixed=self.fixed)
         A_tensor = transform_A(A) * 255.0
 
         B_tensor = 0
@@ -37,7 +38,7 @@ class AlignedDataset(BaseDataset):
         if self.opt.isTrain or self.opt.use_encoded_image:
             B_path = self.B_paths[index]
             B = Image.open(B_path).convert('RGB')
-            transform_B = get_transform(self.opt, params)
+            transform_B = get_transform(self.opt, params, fixed=self.fixed)
             B_tensor = transform_B(B)
 
         input_dict = {'label': A_tensor, 'image': B_tensor, 'path': A_path}

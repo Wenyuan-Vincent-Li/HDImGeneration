@@ -67,4 +67,6 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
         opt.scale_num += 1
         nfc_prev = opt.nfc  # 32
         del D_curr, G_curr, data_loader, dataset ## TODO; chek if del both data_loader and dataset works
+        # print(Zs[0].shape)
+        # exit()
     return

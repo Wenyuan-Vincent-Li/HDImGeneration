@@ -1,9 +1,13 @@
 import torch.utils.data
 
-def CreateDataLoader(opt):
+def CreateDataLoader(opt, batchSize = None, shuffle=None, fixed = False):
     data_loader = CustomDatasetDataLoader()
     print(data_loader.name())
-    data_loader.initialize(opt)
+    if batchSize == None:
+        batchSize = opt.batchSize
+    if shuffle == None:
+        shuffle = not opt.serial_batches
+    data_loader.initialize(opt, batchSize, shuffle, fixed)
     return data_loader
 
 class BaseDataLoader():
@@ -21,13 +25,16 @@ class CustomDatasetDataLoader(BaseDataLoader):
     def name(self):
         return 'CustomDatasetDataLoader'
 
-    def initialize(self, opt):
+    def initialize(self, opt, batch_size, shuffle, fixed):
+
+        print('batchsize', batch_size)
         BaseDataLoader.initialize(self, opt)
-        self.dataset = CreateDataset(opt)
+        self.dataset = CreateDataset(opt, fixed)
         self.dataloader = torch.utils.data.DataLoader(
             self.dataset,
-            batch_size=opt.batchSize,
-            shuffle=not opt.serial_batches,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            # num_workers = 0)
             num_workers=int(opt.nThreads))
 
     def load_data(self):
@@ -36,11 +43,11 @@ class CustomDatasetDataLoader(BaseDataLoader):
     def __len__(self):
         return min(len(self.dataset), self.opt.max_dataset_size)
 
-def CreateDataset(opt):
+def CreateDataset(opt, fixed):
     dataset = None
     from InputPipeline.AlignedDataset import AlignedDataset
     dataset = AlignedDataset()
 
     print("dataset [%s] was created" % (dataset.name()))
-    dataset.initialize(opt)
+    dataset.initialize(opt, fixed)
     return dataset
