@@ -26,8 +26,6 @@ class CustomDatasetDataLoader(BaseDataLoader):
         return 'CustomDatasetDataLoader'
 
     def initialize(self, opt, batch_size, shuffle, fixed):
-
-        print('batchsize', batch_size)
         BaseDataLoader.initialize(self, opt)
         self.dataset = CreateDataset(opt, fixed)
         self.dataloader = torch.utils.data.DataLoader(

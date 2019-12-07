@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     data = next(iter(dataset))
     print(data['label'].shape, data['image'].shape)
-    print(data['path'])
+    # print(data['path'])
     exit()
     print(np.unique(data['label']))
     # display_sementic((data['image'][0, ...].numpy() + 1 )/ 2 * 255, data['label'][0,0,...].numpy())
