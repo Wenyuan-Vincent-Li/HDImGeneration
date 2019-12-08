@@ -117,7 +117,8 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
                     prev = torch.full([opt.batchSize,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
                     in_s = prev # full of 0 [None, 3, 32, 32]
                     prev = m_image(prev) #[None, 3, 42, 42]
-                    z_prev = torch.full([opt.batchSize,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
+#                     z_prev = torch.full([opt.batchSize,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
+                    z_prev = torch.full([right - left,opt.nc_z,opt.nzx,opt.nzy], 0, device=opt.device)
                     z_prev = m_noise(z_prev) # [None, 3, 42, 42]
                     mask = m_image(data['label']) # [None, 3, 42, 42]
                     opt.noise_amp = 1
