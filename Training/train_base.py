@@ -96,13 +96,16 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
             errD_real.backward(retain_graph=True)
             D_x = -errD_real.item()
 
-            left, right = (epoch * len(dataloader) + j * opt.batchSize) % opt.num_images, (epoch * len(dataloader)
-                                                                            + (j+1) * opt.batchSize) % opt.num_images
-
+#             left, right = (epoch * len(dataloader) + j * opt.batchSize) % opt.num_images, (epoch * len(dataloader)
+#                                                                             + (j+1) * opt.batchSize) % opt.num_images
+            left, right = 0, 1
             if left < right:
-                Zs_prime = [i[left:right, :, :, :] for i in Zs]
+#                 Zs_prime = [i[left:right, :, :, :] for i in Zs]
+#                 fixed_data_label = fixed_data['down_scale_label']
+#                 fixed_data_label = [i[left:right, :, :, :] for i in fixed_data_label]
+                Zs_prime = [i[left, :, :, :] for i in Zs]
                 fixed_data_label = fixed_data['down_scale_label']
-                fixed_data_label = [i[left:right, :, :, :] for i in fixed_data_label]
+                fixed_data_label = [i[left, :, :, :] for i in fixed_data_label]
             else:
                 Zs_prime = []
                 fixed_data_label_temp = fixed_data['down_scale_label']
@@ -172,9 +175,13 @@ def train_single_scale(dataloader,netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt):
             errG = -output.mean() # Generator want to make output as large as possible.
             errG.backward(retain_graph=True)
             if left < right:
-                z_opt_temp = z_opt[left:right,:,:,:]
-                fixed_image_temp = fixed_data['image'][left:right,:,:,:]
-                fixed_mask_temp = fixed_data['label'][left:right,:,:,:]
+#                 z_opt_temp = z_opt[left:right,:,:,:]
+#                 fixed_image_temp = fixed_data['image'][left:right,:,:,:]
+#                 fixed_mask_temp = fixed_data['label'][left:right,:,:,:]
+#                 fixed_mask_temp = m_image(fixed_mask_temp)
+                z_opt_temp = z_opt[left,:,:,:]
+                fixed_image_temp = fixed_data['image'][left,:,:,:]
+                fixed_mask_temp = fixed_data['label'][left,:,:,:]
                 fixed_mask_temp = m_image(fixed_mask_temp)
             else:
                 z_opt_temp = torch.cat((z_opt[left:, :, :, :], z_opt[:right, :, :, :]), dim=0)
