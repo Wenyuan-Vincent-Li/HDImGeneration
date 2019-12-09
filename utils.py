@@ -194,8 +194,6 @@ def merge(images, size):
 ###########################
 ## Test code
 ###########################
-def _main_variable_name_string():
-    print(variable_name_string())
 
 if __name__ == "__main__":
     exit()

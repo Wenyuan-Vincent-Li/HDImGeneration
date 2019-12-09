@@ -94,6 +94,24 @@ def convert_image_np(inp):
     inp = np.clip(inp,0,1)
     return inp
 
+def convert_mask_np(segmentation_mask, num_classes = 4):
+    label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
+    def apply_mask(image, mask, color):
+        """Apply the given mask to the image.
+        """
+        mask = mask.transpose((1,2,0))
+        for c in range(3):
+            image[:, :, c] = np.where(np.squeeze(mask == 1), color[c] * 255, image[:, :, c])
+        return image
+
+    segmentation_mask = segmentation_mask[-1, :, :, :]
+    mask_image = np.zeros((segmentation_mask.shape[1], segmentation_mask.shape[2], 3))
+    for label in range(num_classes):
+        mask = np.zeros_like(segmentation_mask) ## [1, 1, 162, 162]
+        mask[np.where(segmentation_mask == label)] = 1
+        mask_image = apply_mask(mask_image, mask, label_colours[label])
+    return mask_image.astype(np.uint8)
+
 def reset_grads(model,require_grad):
     for p in model.parameters():
         p.requires_grad_(require_grad)

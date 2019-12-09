@@ -5,6 +5,7 @@ from InputPipeline.DataLoader import CreateDataLoader
 import torch.nn as nn
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 def SinGAN_generate(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=1,n=0,gen_start_scale=0,num_samples=50):
     opt.batchSize = 1
@@ -19,25 +20,20 @@ def SinGAN_generate(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=1,n=0,g
     data_loader = CreateDataLoader(opt)
     dataset = data_loader.load_data()
     data = next(iter(dataset))
+    masks = data['down_scale_label']
 
 
-
-    maskTransforms = []
-    for i in range(opt.scale_num):
-        modules = [nn.MaxPool2d(2)] * (i + 1)
-        maskTransforms.append(nn.Sequential(*modules))
     if in_s is None:
-        # in_s = torch.full((1, 3, reals[0][0], reals[0][1]), 0, device=opt.device)
-        in_s = imresize(data['image'], pow(opt.scale_factor, len(Gs)), opt)
+        in_s = torch.full((1, 3, reals[0][0], reals[0][1]), 0, device=opt.device)
+        # in_s = imresize(data['image'], pow(opt.scale_factor, len(Gs)), opt)
     images_cur = []
 
 
-    for G,Z_opt,noise_amp,maskTransform in zip(Gs,Zs,NoiseAmp, reversed(maskTransforms)):
+    for G,Z_opt,noise_amp, mask in zip(Gs,Zs,NoiseAmp, masks):
         pad1 = ((opt.ker_size-1)*opt.num_layer)/2
         m = nn.ZeroPad2d(int(pad1))
         nzx = (Z_opt.shape[2]-pad1*2)*scale_v
         nzy = (Z_opt.shape[3]-pad1*2)*scale_h
-        mask = maskTransform(data['label'])
         mask = m(mask)
         images_prev = images_cur
         images_cur = []
@@ -69,7 +65,6 @@ def SinGAN_generate(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=1,n=0,g
 
             if n < gen_start_scale:
                 z_curr = Z_opt
-
             z_in = noise_amp*(z_curr)+I_prev
 
             # if n ==0:
@@ -92,4 +87,4 @@ def SinGAN_generate(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=1,n=0,g
                     #plt.imsave('%s/in_s.png' % (dir2save), functions.convert_image_np(in_s), vmin=0,vmax=1)
             images_cur.append(I_curr)
         n+=1
-    return I_curr.detach()
+    return I_curr.detach(), data['label'], data['image']
