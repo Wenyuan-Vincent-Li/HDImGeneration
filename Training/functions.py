@@ -103,7 +103,7 @@ def convert_mask_np(segmentation_mask, num_classes = 4):
         for c in range(3):
             image[:, :, c] = np.where(np.squeeze(mask == 1), color[c] * 255, image[:, :, c])
         return image
-
+    segmentation_mask = segmentation_mask.cpu().numpy()
     segmentation_mask = segmentation_mask[-1, :, :, :]
     mask_image = np.zeros((segmentation_mask.shape[1], segmentation_mask.shape[2], 3))
     for label in range(num_classes):
