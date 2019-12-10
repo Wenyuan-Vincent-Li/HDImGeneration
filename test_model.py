@@ -1,26 +1,15 @@
 import torch
-class config():
-    nc_im = 3
-    nc_mask = 4
-    nfc = 32
-    ker_size = 3
-    padd_size = 0
-    min_nfc = 16
-    num_layer = 5
-    device = torch.device('cpu')
+from options.train_options import TrainOptions
 
-from Models.model import *
-opt = config()
-netG = GeneratorConcatSkip2CleanAdd(opt).to(opt.device)
-netG.apply(weights_init)
-netD = WDiscriminator(opt).to(opt.device)
-netD.apply(weights_init)
+from Models.pix2pixHD import *
+opt = TrainOptions().parse()
+netD, netG = init_models(opt)
 
-x = torch.rand(4, 3, 128, 128)
-y = torch.rand(4, 3, 128, 128)
-mask = torch.rand(4, 4, 128, 128)
+x = torch.rand(4, 3, 38, 38).to(opt.device)
+y = torch.rand(4, 3, 38, 38).to(opt.device)
+mask = torch.rand(4, 4, 38, 38).to(opt.device)
 
-output = netD(x, mask)
+output = netG(x, y, mask)
 
 
 
