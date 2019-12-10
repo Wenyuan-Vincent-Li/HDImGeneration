@@ -33,7 +33,7 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
     ## Create transforms for mask to downsampled
 
     alpha = opt.alpha  # 10
-    if alpha > 0:  # create and preload the image and label for reconstruction loss
+    if alpha > -1:  # create and preload the image and label for reconstruction loss
         fixed_data_loader = CreateDataLoader(opt, batchSize=opt.num_images, shuffle=False, fixed=True)
         fixed_dataset = fixed_data_loader.load_data()
         fixed_data = next(iter(fixed_dataset))
@@ -41,7 +41,7 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
         print('Create fixed reconstruction image dataset for scale level %d, #training images = %d' % (
         opt.scale_num, opt.num_images))
         fixed_data['image'] = fixed_data['image'].to(opt.device)
-        # fixed_data['label'] = fixed_data['label'].to(opt.device)
+        fixed_data['label'] = fixed_data['label'].to(opt.device)
         temp = []
         for i in fixed_data['down_scale_label']:
             temp.append(i.to(opt.device))
