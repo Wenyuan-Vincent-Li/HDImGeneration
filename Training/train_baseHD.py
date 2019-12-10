@@ -284,7 +284,7 @@ def draw_concat(Gs, Zs, masks, reals, NoiseAmp, in_s, mode, m_noise, m_image, op
                 ## z [None, 3, 32, 32]
                 # z = m_noise(z)  ## z [1, 3, 42, 42]
                 G_z = G_z[:, :, 0:real_curr[0], 0:real_curr[1]]  ## G_z [None, 3, 32, 32]
-                G_z = m_image(G_z)  ## G_z [None, 3, 42, 42] all zeros
+                # G_z = m_image(G_z)  ## G_z [None, 3, 42, 42] all zeros
                 z_in = noise_amp * z + G_z  ## [None, 3, 42, 42] Gaussian noise
 
                 ## TODO: check the size of noise and mask
