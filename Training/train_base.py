@@ -259,10 +259,11 @@ def draw_concat(Gs,Zs,masks,reals,NoiseAmp,in_s,mode,m_noise,m_image,opt):
     :param opt:
     :return:
     '''
-    if mode == 'rec':
-        G_z = in_s[0:1,:,:,:]
-    else:
-        G_z = in_s[:opt.batchSize,:,:,:] #[None, 3, 26, 26] all zeros, image input for the corest level
+    # if mode == 'rec':
+    #     G_z = in_s[0:1,:,:,:]
+    # else:
+    #     G_z = in_s[:opt.batchSize,:,:,:] #[None, 3, 26, 26] all zeros, image input for the corest level
+    G_z = in_s[:opt.batchSize, :, :, :]  # [None, 3, 26, 26] all zeros, image input for the corest level
     if len(Gs) > 0:
         if mode == 'rand':
             count = 0
