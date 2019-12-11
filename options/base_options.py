@@ -53,8 +53,8 @@ class BaseOptions():
                                  help='if specified, use tensorboard logging. Requires tensorflow installed')
 
         # pyramid parameters:
-        self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.5)  # pow(0.5,1/6))
-        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=2)  # pow(0.5,1/6))
+        self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.75)  # pow(0.5,1/6))
+        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=4)  # pow(0.5,1/6))
         self.parser.add_argument('--noise_amp', type=float, help='addative noise cont weight', default=0.1)
         # self.parser.add_argument('--min_size', type=int, help='image minimal size at the coarser scale', default=25)
         # self.parser.add_argument('--max_size', type=int, help='image maximal size at the finest scale', default=256)
