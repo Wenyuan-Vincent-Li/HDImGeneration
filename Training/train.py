@@ -8,7 +8,7 @@ from Models.pix2pixHD import init_models
 from Training.train_baseHD import train_single_scale
 
 def train(opt, Gs, Zs, NoiseAmp, reals):
-    batchSize = [8] * opt.stop_scale
+    batchSize = [8] * (opt.stop_scale + 1)
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
     opt.reals = reals
@@ -68,6 +68,4 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
         opt.scale_num += 1
         nfc_prev = opt.nfc  # 32
         del D_curr, G_curr, data_loader, dataset ## TODO; chek if del both data_loader and dataset works
-        # print(Zs[0].shape)
-        # exit()
     return

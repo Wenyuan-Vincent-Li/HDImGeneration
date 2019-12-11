@@ -28,7 +28,7 @@ class BaseOptions():
         self.parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
 
         # input/output sizes
-        self.parser.add_argument('--batchSize', type=int, default=8, help='input batch size')
+        self.parser.add_argument('--batchSize', type=int, default=3, help='input batch size')
         self.parser.add_argument('--randomScale', action='store_false', default=True, help='whether to do random scale before crop')
         self.parser.add_argument('--fineSize', type=int, default=512, help='then crop to this size')
         self.parser.add_argument('--label_nc', type=int, default=4, help='# of input label channels')
@@ -54,7 +54,7 @@ class BaseOptions():
 
         # pyramid parameters:
         self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.5)  # pow(0.5,1/6))
-        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=4)  # pow(0.5,1/6))
+        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=2)  # pow(0.5,1/6))
         self.parser.add_argument('--noise_amp', type=float, help='addative noise cont weight', default=0.1)
         # self.parser.add_argument('--min_size', type=int, help='image minimal size at the coarser scale', default=25)
         # self.parser.add_argument('--max_size', type=int, help='image maximal size at the finest scale', default=256)

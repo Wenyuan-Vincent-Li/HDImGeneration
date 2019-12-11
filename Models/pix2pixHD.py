@@ -105,7 +105,17 @@ def mask2onehot(label_map, label_nc):
     return input_label
 
 
+def get_norm_layer(norm_type='instance'):
+    if norm_type == 'batch':
+        norm_layer = functools.partial(nn.BatchNorm2d, affine=True)
+    elif norm_type == 'instance':
+        norm_layer = functools.partial(nn.InstanceNorm2d, affine=False)
+    else:
+        raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
+    return norm_layer
+
 def init_models(opt):
+    norm_layer = get_norm_layer(norm_type=opt.norm)
     #generator initialization:
     netG = GeneratorConcatSkip2CleanAdd(opt.input_nc + opt.label_nc, opt.input_nc, opt).to(opt.device)
     netG.apply(weights_init)
@@ -114,7 +124,8 @@ def init_models(opt):
     print(netG)
 
     #discriminator initialization:
-    netD = WDiscriminator(opt.input_nc + opt.label_nc, opt).to(opt.device)
+    netD = WDiscriminator(opt.input_nc + opt.label_nc, opt, norm_layer=norm_layer, getIntermFeat=not opt.no_ganFeat_loss,
+                          use_sigmoid=opt.no_lsgan).to(opt.device)
     netD.apply(weights_init)
     if opt.netD != '':
         netD.load_state_dict(torch.load(opt.netD))
