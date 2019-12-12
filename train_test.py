@@ -3,7 +3,7 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.name = 'prostate'
+opt.name = 'prostateHD'
 Gs = []
 Zs = []
 NoiseAmp = []
