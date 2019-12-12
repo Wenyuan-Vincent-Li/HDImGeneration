@@ -11,5 +11,5 @@ reals = []
 reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
 
 
-opt.alpha = 4 ## Not to use reconstruction loss
+opt.alpha = 5 ## Not to use reconstruction loss
 train(opt, Gs, Zs, NoiseAmp, reals)
