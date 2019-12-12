@@ -3,7 +3,7 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.name = 'prostateHD'
+opt.name = 'prostate'
 Gs = []
 Zs = []
 NoiseAmp = []
@@ -11,5 +11,5 @@ reals = []
 reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
 
 
-opt.alpha = 8 ## Not to use reconstruction loss
+opt.alpha = 4 ## Not to use reconstruction loss
 train(opt, Gs, Zs, NoiseAmp, reals)
