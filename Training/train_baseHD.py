@@ -236,7 +236,8 @@ def draw_concat(Gs, masks, reals, NoiseAmp, in_s, mode, opt):
                 G_z = G_z[:, :, 0:real_curr[0], 0:real_curr[1]]  ## G_z [None, 3, 32, 32]
                 z_in = noise_amp * z + G_z
                 G_z = G(z_in.detach(), G_z, mask)  ## [1, 3, 26, 26] output of previous generator
-                G_z = imresize(G_z, 1 / opt.scale_factor, opt)  ## output upsampling (bilinear) [1, 3, 34, 34]
+                # G_z = imresize(G_z, 1 / opt.scale_factor, opt)  ## output upsampling (bilinear) [1, 3, 34, 34]
+                G_z = imresize(G_z, real_next[1] / real_curr[1], opt)
                 G_z = G_z[:, :, 0:real_next[0],
                       0:real_next[1]]  ## resize the image to be compatible with current G [1, 3, 33, 33]
                 count += 1
