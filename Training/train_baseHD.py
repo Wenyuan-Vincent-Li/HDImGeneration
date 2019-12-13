@@ -33,7 +33,7 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
     z_opt = 0 ## dummy z_opt
     ## Create transforms for mask to downsampled
 
-    # alpha = opt.alpha  # 10
+    alpha = opt.alpha
     # if alpha > -1:  # create and preload the image and label for reconstruction loss
     #     fixed_data_loader = CreateDataLoader(opt, batchSize=opt.num_images, shuffle=False, fixed=True)
     #     fixed_dataset = fixed_data_loader.load_data()
@@ -165,7 +165,12 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
             if not opt.no_vgg_loss:
                 loss_G_VGG = loss.criterionVGG(fake, data['image']) * opt.lambda_feat
 
-            errG = loss_G_GAN + loss_G_GAN_Feat + loss_G_VGG
+            ## reconstruction loss
+            if alpha != 0:  ## alpha = 10 calculate the reconstruction loss
+                loss = nn.MSELoss()
+                rec_loss = alpha * loss(fake, data['image'])
+
+            errG = loss_G_GAN + loss_G_GAN_Feat + loss_G_VGG + rec_loss
             errG.backward()
             optimizerG.step()
 
