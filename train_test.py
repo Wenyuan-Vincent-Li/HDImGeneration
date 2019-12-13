@@ -11,8 +11,9 @@ NoiseAmp = []
 reals = [[64, 64], [128, 128], [192, 192], [256, 256], [320, 320], [384, 384], [448, 448], [512, 512]]
 # reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
 
-opt.alpha = 1e-4
-opt.niter = 500
-opt.scale_factor = 0.77
+opt.alpha = 1e-3
+opt.niter = 200
+opt.scale_factor = 0.78
+opt.noise_amp = 1e-2
 
 train(opt, Gs, Zs, NoiseAmp, reals)
