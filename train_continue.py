@@ -3,10 +3,12 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.alpha = 0 ## Not to use reconstruction loss
+opt.alpha = 1e-3
 opt.name = 'prostateHD'
-opt.scale_factor = 0.5
+opt.scale_factor = 0.78
+opt.niter = 200
+opt.noise_amp = 0
 Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
+Gs = Gs[:1]
 
-print(len(NoiseAmp), NoiseAmp)
-# train(opt, Gs, Zs, NoiseAmp, reals)
+train(opt, Gs, Zs, NoiseAmp, reals)
