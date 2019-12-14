@@ -170,6 +170,8 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
             if alpha != 0:  ## alpha = 10 calculate the reconstruction loss
                 Recloss = nn.MSELoss()
                 rec_loss = alpha * Recloss(fake, data['image'])
+            else:
+                rec_loss = 0
 
             errG = loss_G_GAN + loss_G_GAN_Feat + loss_G_VGG + rec_loss
             errG.backward()
