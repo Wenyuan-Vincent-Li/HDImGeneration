@@ -14,7 +14,7 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
     opt.reals = reals
     if opt.scale_num > 0:
         nfc_prev = opt.nfc
-        in_s = torch.full([opt.batchSize,opt.nc_z,opt.reals[opt.scale_num][0],opt.reals[opt.scale_num][1]], 0, device=opt.device)
+        in_s = torch.full([batchSize[opt.scale_num], opt.nc_z,opt.reals[opt.scale_num][0],opt.reals[opt.scale_num][1]], 0, device=opt.device)
     else:
         nfc_prev = 0
         in_s = 0
