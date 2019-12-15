@@ -36,11 +36,11 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
 
         D_curr, G_curr = init_models(opt)
 
-        if (nfc_prev == opt.nfc):
-            # @ scale_num = 0 (nfc_prev = 0 != opt.nfc = 32); for level above 1,
-            # we reload the trained weights from the last scale
-            G_curr.load_state_dict(torch.load('%s/%d/netG.pth' % (opt.out_, opt.scale_num - 1)))
-            D_curr.load_state_dict(torch.load('%s/%d/netD.pth' % (opt.out_, opt.scale_num - 1)))
+        # if (nfc_prev == opt.nfc):
+        #     # @ scale_num = 0 (nfc_prev = 0 != opt.nfc = 32); for level above 1,
+        #     # we reload the trained weights from the last scale
+        #     G_curr.load_state_dict(torch.load('%s/%d/netG.pth' % (opt.out_, opt.scale_num - 1)))
+        #     D_curr.load_state_dict(torch.load('%s/%d/netD.pth' % (opt.out_, opt.scale_num - 1)))
 
         z_curr, in_s, G_curr = train_single_scale(dataset, D_curr, G_curr, opt.reals, Gs, Zs, in_s, NoiseAmp, opt)
         # TODO: rethink z_curr, in_s, G_curr meaning, and make sure they are OKAY with each other
