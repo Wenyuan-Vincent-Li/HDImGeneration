@@ -186,7 +186,7 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
         if epoch % 25 == 0 or epoch == (opt.niter - 1):
             print('scale %d:[%d/%d]' % (opt.scale_num, epoch, opt.niter))
 
-        if epoch % 50 == 0 or epoch == (opt.niter - 1):
+        if epoch % 25 == 0 or epoch == (opt.niter - 1):
             plt.imsave('%s/fake_sample_%d.png' % (opt.outf, epoch),
                        functions.convert_image_np(fake.detach()), vmin=0, vmax=1)
             plt.imsave('%s/fake_sample_real_%d.png' % (opt.outf, epoch),
