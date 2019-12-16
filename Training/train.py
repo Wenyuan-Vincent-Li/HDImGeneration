@@ -4,7 +4,8 @@ from InputPipeline.DataLoader import CreateDataLoader
 from Training import functions
 # from Models.model import init_models
 # from Training.train_base import train_single_scale
-from Models.pix2pixHD import init_models
+# from Models.pix2pixHD import init_models
+from Models.pix2pixHD2 import init_models
 from Training.train_baseHD import train_single_scale
 
 def train(opt, Gs, Zs, NoiseAmp, reals):
