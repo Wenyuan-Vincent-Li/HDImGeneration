@@ -3,11 +3,11 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.alpha = 1e-3
+opt.alpha = 0
 opt.name = 'prostateHD'
-opt.scale_factor = 0.78
+opt.scale_factor = 0.80
 opt.niter = 200
-opt.noise_amp = 1e-8
+opt.noise_amp = 1
 Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
 Gs = Gs[:1]
 
