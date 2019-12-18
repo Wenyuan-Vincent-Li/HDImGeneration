@@ -12,9 +12,9 @@ reals = [[64, 64], [128, 128], [192, 192], [256, 256], [320, 320], [384, 384], [
 # reals = [[256, 256], [512,512]]
 # reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
 
-opt.alpha = 0
+opt.alpha = 0.1
 opt.niter = 200
-opt.scale_factor = 0.86
+opt.scale_factor = 0.87
 opt.noise_amp = 1
 
 train(opt, Gs, Zs, NoiseAmp, reals)
