@@ -3,7 +3,7 @@ from Training.train import train
 from Training import functions
 
 opt = TrainOptions().parse()
-opt.alpha = 0.`
+opt.alpha = 0.1
 opt.name = 'prostateHD'
 opt.scale_factor = 0.87
 opt.niter = 200
