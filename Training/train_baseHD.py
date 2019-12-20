@@ -110,8 +110,8 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
                     criterion = nn.MSELoss()
                     # RMSE = torch.sqrt(criterion(data['image'], z_prev))
                     RMSE = torch.sqrt(criterion(data['image'], prev))
-                    # opt.noise_amp = opt.noise_amp_init * RMSE
-                    opt.noise_amp = pow(0.10, opt.scale_num) * RMSE
+                    opt.noise_amp = opt.noise_amp_init * RMSE
+                    # opt.noise_amp = pow(0.10, opt.scale_num) * RMSE
                     # z_prev = m_image(z_prev)  ## [1, 3, 43, 43]
                     # prev = m_image(prev)  ## [1, 3, 43, 43]
                     # mask = m_image(data['label'])
