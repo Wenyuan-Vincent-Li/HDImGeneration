@@ -12,8 +12,8 @@ reals = [[256, 256], [320, 320], [384, 384], [448, 448], [512,512]]
 # reals = [[1024,1024]]
 # reals = functions.create_reals_pyramid([opt.fineSize, opt.fineSize], reals, opt)
 
-opt.alpha = 0.1
-opt.niter = 200
+opt.alpha = 0
+opt.niter = 50
 opt.scale_factor = 1.01
 opt.noise_amp = 1
 opt.no_vgg_loss = True
