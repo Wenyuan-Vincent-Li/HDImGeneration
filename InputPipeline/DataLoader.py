@@ -43,8 +43,11 @@ class CustomDatasetDataLoader(BaseDataLoader):
 
 def CreateDataset(opt, fixed):
     dataset = None
-    from InputPipeline.AlignedDataset import AlignedDataset
-    dataset = AlignedDataset()
+    if opt.name == "mask":
+        from InputPipeline.MaskDataset import MaskDataset as Dataset
+    else:
+        from InputPipeline.AlignedDataset import AlignedDataset as Dataset
+    dataset = Dataset()
 
     print("dataset [%s] was created" % (dataset.name()))
     dataset.initialize(opt, fixed)
