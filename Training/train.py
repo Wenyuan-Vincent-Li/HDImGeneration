@@ -9,7 +9,7 @@ from Models.pix2pixHD2 import init_models
 from Training.train_baseHD import train_single_scale
 
 def train(opt, Gs, Zs, NoiseAmp, reals):
-    batchSize = [2] * (opt.stop_scale + 1)
+    batchSize = [4] * (opt.stop_scale + 1)
     # batchSize = [32, 32, 16, 4, 2] ## Local computer
     opt.scale_num = len(Gs)
     opt.reals = reals
