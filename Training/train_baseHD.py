@@ -193,7 +193,7 @@ def train_single_scale(dataloader, netD, netG, reals, Gs, Zs, in_s, NoiseAmp, op
             plt.imsave('%s/fake_sample_real_%d.png' % (opt.outf, epoch),
                        functions.convert_image_np(data['image']), vmin=0, vmax=1)
             plt.imsave('%s/fake_sample_mask_%d.png' % (opt.outf, epoch),
-                       functions.convert_mask_np(data['label']))
+                       functions.convert_mask_np(data['label'], num_classes= opt.label_nc))
             # plt.imsave('%s/D_fake.png'   % (opt.outf), functions.convert_image_np(D_fake_map))
             # plt.imsave('%s/D_real.png'   % (opt.outf), functions.convert_image_np(D_real_map))
             # plt.imsave('%s/z_opt.png'    % (opt.outf), functions.convert_image_np(z_opt.detach()), vmin=0, vmax=1)

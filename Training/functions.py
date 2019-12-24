@@ -118,7 +118,7 @@ def convert_image_np(inp):
     return inp
 
 def convert_mask_np(segmentation_mask, num_classes = 4):
-    label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
+    label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0), [0, 1, 1], [1, 1, 1]]
     def apply_mask(image, mask, color):
         """Apply the given mask to the image.
         """

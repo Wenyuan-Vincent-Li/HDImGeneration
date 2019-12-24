@@ -36,9 +36,9 @@ def apply_mask(image, mask, color, alpha=0.5):
                                   image[c, :, :])
     return image
 
-def display_sementic(image, segmentation_mask, num_classes=int(4),
+def display_sementic(image, segmentation_mask, num_classes=int(6),
                      title="", figsize=(16, 16), ax=None):
-    label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
+    label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0), (0, 1, 1), (1, 1, 1)]
 
     ## 0/stroma : red; 1/low-grade: green; 2/high-grade: blue 3/benign: yellow
 

@@ -30,7 +30,7 @@ class BaseOptions():
         # input/output sizes
         self.parser.add_argument('--batchSize', type=int, default=3, help='input batch size')
         self.parser.add_argument('--randomScale', action='store_false', default=True, help='whether to do random scale before crop')
-        self.parser.add_argument('--fineSize', type=int, default=1024, help='then crop to this size')
+        self.parser.add_argument('--fineSize', type=int, default=448, help='then crop to this size')
         self.parser.add_argument('--label_nc', type=int, default=4, help='# of input label channels')
         self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
         self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
