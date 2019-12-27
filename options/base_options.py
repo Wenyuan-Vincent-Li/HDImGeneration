@@ -19,10 +19,6 @@ class BaseOptions():
         # self.parser.add_argument('--model', type=str, default='pix2pixHD', help='which model to use')
         self.parser.add_argument('--norm', type=str, default='instance',
                                  help='instance normalization or batch normalization')
-        # self.parser.add_argument('--use_dropout', action='store_true', help='use dropout for the generator')
-        # self.parser.add_argument('--data_type', default=32, type=int, choices=[8, 16, 32],
-        #                          help="Supported data type i.e. 8, 16, 32 bit")
-        # self.parser.add_argument('--verbose', action='store_true', default=False, help='toggles verbose')
 
         # input/output sizes
         # self.parser.add_argument('--batchSize', type=int, default=8, help='input batch size')
@@ -48,49 +44,18 @@ class BaseOptions():
         #                          help='if specified, use tensorboard logging. Requires tensorflow installed')
 
         # pyramid parameters:
-        # self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.76)  # pow(0.5,1/6))
-        # self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=8)  # pow(0.5,1/6))
         self.parser.add_argument('--noise_amp', type=float, help='addative noise cont weight', default=0.1)
 
         # networks hyper parameters:
         self.parser.add_argument('--nfc', type=int, default=32)
-        # self.parser.add_argument('--min_nfc', type=int, default=32)
-        # self.parser.add_argument('--ker_size', type=int, help='kernel size', default=3)
-        # self.parser.add_argument('--num_layer', type=int, help='number of layers', default=5)
-        # self.parser.add_argument('--stride', help='stride', default=1)
-        # self.parser.add_argument('--padd_size', type=int, help='net pad size', default=0)  # math.floor(opt.ker_size/2)
-
 
         # for generator
         self.parser.add_argument('--netG', default='', help="path to netG (to continue training)")
         self.parser.add_argument('--nc_z', type=int, help='noise # channels', default=3)
-        # self.parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in first conv layer')
-        # self.parser.add_argument('--n_downsample_global', type=int, default=4,
-        #                          help='number of downsampling layers in netG')
-        # self.parser.add_argument('--n_blocks_global', type=int, default=9,
-        #                          help='number of residual blocks in the global generator network')
-        # self.parser.add_argument('--n_blocks_local', type=int, default=3,
-        #                          help='number of residual blocks in the local enhancer network')
-        # self.parser.add_argument('--n_local_enhancers', type=int, default=1, help='number of local enhancers to use')
-        # self.parser.add_argument('--niter_fix_global', type=int, default=0,
-        #                          help='number of epochs that we only train the outmost local enhancer')
 
         # for discriminator
         self.parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 
-        # for instance-wise features
-        # self.parser.add_argument('--no_instance', action='store_true',
-        #                          help='if specified, do *not* add instance map as input')
-        # self.parser.add_argument('--instance_feat', action='store_true',
-        #                          help='if specified, add encoded instance features as input')
-        # self.parser.add_argument('--label_feat', action='store_true',
-        #                          help='if specified, add encoded label features as input')
-        # self.parser.add_argument('--feat_num', type=int, default=3, help='vector length for encoded features')
-        # self.parser.add_argument('--load_features', action='store_true',
-        #                          help='if specified, load precomputed feature maps')
-        # self.parser.add_argument('--n_downsample_E', type=int, default=4, help='# of downsampling layers in encoder')
-        # self.parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
-        # self.parser.add_argument('--n_clusters', type=int, default=10, help='number of clusters for features')
         #
         self.initialized = True
 
