@@ -1,4 +1,6 @@
 from Models.pix2pixHD_base import *
+import functools
+import numpy as np
 
 class GeneratorConcatSkip2CleanAdd(nn.Module):
     def __init__(self, input_nc, output_nc, opt, ngf=64, n_downsampling=3, n_blocks=9, norm_layer=nn.BatchNorm2d,

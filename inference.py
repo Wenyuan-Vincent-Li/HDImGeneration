@@ -1,9 +1,10 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import os
 from Testing.manipulate import *
 from options.train_options import TrainOptions
 from Training import functions
-from InputPipeline.DataLoader import CreateDataLoader, CreateDataset
-
-import matplotlib.pyplot as plt
+from InputPipeline.DataLoader import CreateDataset
 from Training.imresize import imresize
 
 opt = TrainOptions().parse()
@@ -13,12 +14,11 @@ opt.dataroot = './Datasets/ColonPair_Fine/'
 opt.label_nc = 6
 opt.scale_factor = 2.00
 save_every_scale = True
-signature = 3
+signature = 100
 signature = str(signature).zfill(4)
 label_manipulate = False
 
-Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
-# Gs = Gs[:-2]
+Gs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
 opt.reals = reals
 opt.batchSize = 2
 opt.num_samples = 4
@@ -33,54 +33,46 @@ except OSError:
     pass
 
 
-random = False
+random = True
+dataset = CreateDataset(opt, fixed=True)
+N = len(dataset.A_paths)
 
-
-
-if random: # random sample a mask
-    data_loader = CreateDataLoader(opt)
-    dataset = data_loader.load_data()
-    data = next(iter(dataset))
-    _, _, im_x, im_y = data['label'].shape
-    masks = data['down_scale_label']
-    masks += [data['label']]
-    data['label'] = data['label'].expand(opt.num_samples, 1, im_x, im_y)
-    data['image'] = data['image'].expand(opt.num_samples, 3, im_x, im_y)
+if random:
+    n = np.random.randint(N)
 else:
-    dataset = CreateDataset(opt, fixed=True)
-    # print(dataset.A_paths)
-    data = dataset[8]
-    _, im_x, im_y = data['label'].shape
-    data['label'] = data['label'].expand(opt.num_samples, 1, im_x, im_y)
-    data['image'] = data['image'].expand(opt.num_samples, 3, im_x, im_y)
-    masks = []
-    for idx, val in enumerate(data['down_scale_label']):
-        _, x, y = val.shape
-        masks += [val.expand(opt.num_samples, 1, x, y)]
-    masks += [data['label']]
+    n = 8
 
-    if label_manipulate:
-        def label_man(label, scale_label, source_label, target_label):
-            mask = label == source_label
-            label[mask] = target_label
+data = dataset[n]
+_, im_x, im_y = data['label'].shape
+data['label'] = data['label'].expand(opt.num_samples, 1, im_x, im_y)
+data['image'] = data['image'].expand(opt.num_samples, 3, im_x, im_y)
+masks = []
+for idx, val in enumerate(data['down_scale_label']):
+    _, x, y = val.shape
+    masks += [val.expand(opt.num_samples, 1, x, y)]
+masks += [data['label']]
 
-            man_scale_label = []
-            for cur_label in scale_label:
-                mask = cur_label == source_label
-                cur_label[mask] = target_label
-                man_scale_label.append(cur_label)
+if label_manipulate:
+    def label_man(label, scale_label, source_label, target_label):
+        mask = label == source_label
+        label[mask] = target_label
 
-            return label, man_scale_label
+        man_scale_label = []
+        for cur_label in scale_label:
+            mask = cur_label == source_label
+            cur_label[mask] = target_label
+            man_scale_label.append(cur_label)
 
-        data['label'], masks = label_man(data['label'], masks, source_label = 4, target_label = 3)
+        return label, man_scale_label
+
+    data['label'], masks = label_man(data['label'], masks, source_label = 4, target_label = 3)
 
 
 print(data['path'])
 
-im_gen = SinGAN_generate(Gs,reals, masks, NoiseAmp, opt, num_samples=opt.num_samples)
+im_gen = SinGAN_generate(Gs, reals, masks, NoiseAmp, opt, num_samples=opt.num_samples)
 
 ## Save mask, org image and masks for every scale
-
 if save_every_scale:
     _, _, im_x, im_y = data['image'].shape
     for idx, mask in enumerate(masks):

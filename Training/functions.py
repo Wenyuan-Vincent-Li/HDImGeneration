@@ -141,28 +141,20 @@ def reset_grads(model,require_grad):
     return model
 
 
-def save_networks(netG,netD,z,opt):
+def save_networks(netG,netD,opt):
     torch.save(netG.state_dict(), '%s/netG.pth' % (opt.outf))
     torch.save(netD.state_dict(), '%s/netD.pth' % (opt.outf))
-    torch.save(z, '%s/z_opt.pth' % (opt.outf))
 
 
 def load_trained_pyramid(opt):
-    #dir = 'TrainedModels/%s/scale_factor=%f' % (opt.input_name[:-4], opt.scale_factor_init)
-    # mode = opt.mode
-    # opt.mode = 'train'
-    # if (mode == 'animation_train') | (mode == 'SR_train') | (mode == 'paint_train'):
-    #     opt.mode = mode
     dir = generate_dir2save(opt)
     if(os.path.exists(dir)):
         Gs = torch.load('%s/Gs.pth' % dir)
-        Zs = torch.load('%s/Zs.pth' % dir)
         reals = torch.load('%s/reals.pth' % dir)
         NoiseAmp = torch.load('%s/NoiseAmp.pth' % dir)
     else:
         print('no appropriate trained model is exist, please train first')
-    # opt.mode = mode
-    return Gs,Zs,reals,NoiseAmp
+    return Gs,reals,NoiseAmp
 
 def mask2onehot(label_map, label_nc):
     size = label_map.size()

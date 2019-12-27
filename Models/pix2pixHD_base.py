@@ -1,8 +1,6 @@
 import torch.nn as nn
 import torch
 from torch.autograd import Variable
-import numpy as np
-import functools
 
 # Define a resnet block
 class ResnetBlock(nn.Module):

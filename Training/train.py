@@ -2,15 +2,11 @@ import torch
 from utils import *
 from InputPipeline.DataLoader import CreateDataLoader
 from Training import functions
-# from Models.model import init_models
-# from Training.train_base import train_single_scale
-# from Models.pix2pixHD import init_models
 from Models.pix2pixHD2 import init_models
 from Training.train_baseHD import train_single_scale
 
-def train(opt, Gs, Zs, NoiseAmp, reals):
-    batchSize = [4] * (opt.stop_scale + 1)
-    # batchSize = [32, 32, 16, 4, 2] ## Local computer
+def train(opt, Gs, NoiseAmp, reals):
+    batchSize = [8] * opt.stop_scale
     opt.scale_num = len(Gs)
     opt.reals = reals
     if opt.scale_num > 0:
@@ -20,7 +16,7 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
         nfc_prev = 0
         in_s = 0
 
-    while opt.scale_num < opt.stop_scale + 1:
+    while opt.scale_num < opt.stop_scale:
         opt.batchSize = batchSize[opt.scale_num]
         ## create the dataloader at this scale
         data_loader = CreateDataLoader(opt)
@@ -43,12 +39,7 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
             G_curr.load_state_dict(torch.load('%s/%d/netG.pth' % (opt.out_, opt.scale_num - 1)))
             D_curr.load_state_dict(torch.load('%s/%d/netD.pth' % (opt.out_, opt.scale_num - 1)))
 
-        z_curr, in_s, G_curr = train_single_scale(dataset, D_curr, G_curr, opt.reals, Gs, Zs, in_s, NoiseAmp, opt)
-        # TODO: rethink z_curr, in_s, G_curr meaning, and make sure they are OKAY with each other
-        # Think: for the reconstruction loss, different noise should correspond to different images, can you make
-        # sure that? we can first try without modification, if it's not working, fix this issue
-
-        ## TODO: figure out in_s role in draw concat
+        in_s, G_curr = train_single_scale(dataset, D_curr, G_curr, opt.reals, Gs, in_s, NoiseAmp, opt)
 
         G_curr = functions.reset_grads(G_curr, False)
         ## Change all the requires_grads flage to be False. Aviod data copy for evaluations; Avoid the gradients go through to the lower level
@@ -58,15 +49,13 @@ def train(opt, Gs, Zs, NoiseAmp, reals):
         # TODO: implement eval function and reset_grads
 
         Gs.append(G_curr)
-        Zs.append(z_curr)
         NoiseAmp.append(opt.noise_amp)  # [1]
 
-        torch.save(Zs, '%s/Zs.pth' % (opt.out_))
         torch.save(Gs, '%s/Gs.pth' % (opt.out_))
         torch.save(reals, '%s/reals.pth' % (opt.out_))
         torch.save(NoiseAmp, '%s/NoiseAmp.pth' % (opt.out_))
 
         opt.scale_num += 1
         nfc_prev = opt.nfc  # 32
-        del D_curr, G_curr, data_loader, dataset ## TODO; chek if del both data_loader and dataset works
+        del D_curr, G_curr, data_loader, dataset
     return

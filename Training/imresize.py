@@ -3,8 +3,6 @@ from scipy.ndimage import filters, measurements, interpolation
 from skimage import color
 from math import pi
 import torch
-from PIL import Image
-
 
 def denorm(x):
     out = (x + 1) / 2
@@ -40,37 +38,6 @@ def torch2uint8(x):
     x = x.cpu().numpy()
     x = x.astype(np.uint8)
     return x
-#
-# def labelresize(label, target_width, method = Image.NEAREST):
-#     N, C, ow, oh,  = label.shape
-#     if (ow == target_width):
-#         return label
-#
-#     label_ = []
-#     w = target_width
-#     h = int(target_width * oh / ow)
-#     for i in range(N):
-#         label_curr = torch2PIL(label[i,:,:,:]) ## from torch to PIL image object
-#         label_curr = label_curr.resize((w, h), method)
-#         label_curr = PIL2torch()
-#         label_.append(label_curr)
-#     label = torch.cat(label_, 0)
-#     return label
-#
-# def torch2PIL(x):
-#     x = x.permute((1, 2, 0))
-#     x = x.cpu().numpy()
-#     x = x.astype(np.uint8)
-#     print(x.shape)
-#     x = Image.fromarray(x)
-#     return x
-#
-# def PIL2torch(x):
-#     x = np.array(x)
-#     x = x.transpose((3, 2, 0, 1))
-#     x = torch.from_numpy(x)
-#     x = move_to_gpu(x)
-#     return x
 
 def np2torch(x,opt):
     if opt.input_nc == 3:
@@ -95,15 +62,12 @@ def imresize(im,scale,opt):
         im_curr = np2torch(im_curr, opt)
         im_.append(im_curr)
     im = torch.cat(im_, 0)
-    #im = im[:, :, 0:int(scale * s[2]), 0:int(scale * s[3])]
     return im
 
 def imresize_to_shape(im,output_shape,opt):
-    #s = im.shape
     im = torch2uint8(im)
     im = imresize_in(im, output_shape=output_shape)
     im = np2torch(im,opt)
-    #im = im[:, :, 0:int(scale * s[2]), 0:int(scale * s[3])]
     return im
 
 
@@ -329,12 +293,3 @@ def lanczos3(x):
 
 def linear(x):
     return (x + 1) * ((-1 <= x) & (x < 0)) + (1 - x) * ((0 <= x) & (x <= 1))
-
-
-
-if __name__=="__main__":
-    # from options.train_options import TrainOptions
-    # opt = TrainOptions().parse()
-    image = ((torch.rand(4, 1, 128, 128) + 1) / 2) * 255
-    output = labelresize(image, 64)
-    print(output.shape)

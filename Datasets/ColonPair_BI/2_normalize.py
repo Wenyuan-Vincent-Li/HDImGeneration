@@ -2,7 +2,6 @@ from __future__ import division
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import numpy as np
 import cv2 as cv
 import utils
 from PIL import Image

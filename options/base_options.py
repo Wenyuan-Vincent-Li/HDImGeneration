@@ -12,23 +12,20 @@ class BaseOptions():
 
     def initialize(self):
         # experiment specifics
-        self.parser.add_argument('--name', type=str, default='prostate',
+        self.parser.add_argument('--name', type=str, default='prostateHD',
                                  help='name of the experiment. It decides where to store samples and models')
-        # self.parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         self.parser.add_argument('--cuda', action='store_true', help='enables cuda', default=1)
         self.parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
-        self.parser.add_argument('--model', type=str, default='pix2pixHD', help='which model to use')
+        # self.parser.add_argument('--model', type=str, default='pix2pixHD', help='which model to use')
         self.parser.add_argument('--norm', type=str, default='instance',
                                  help='instance normalization or batch normalization')
-        self.parser.add_argument('--use_dropout', action='store_true', help='use dropout for the generator')
-        self.parser.add_argument('--data_type', default=32, type=int, choices=[8, 16, 32],
-                                 help="Supported data type i.e. 8, 16, 32 bit")
-        self.parser.add_argument('--verbose', action='store_true', default=False, help='toggles verbose')
-        self.parser.add_argument('--fp16', action='store_true', default=False, help='train with AMP')
-        self.parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
+        # self.parser.add_argument('--use_dropout', action='store_true', help='use dropout for the generator')
+        # self.parser.add_argument('--data_type', default=32, type=int, choices=[8, 16, 32],
+        #                          help="Supported data type i.e. 8, 16, 32 bit")
+        # self.parser.add_argument('--verbose', action='store_true', default=False, help='toggles verbose')
 
         # input/output sizes
-        self.parser.add_argument('--batchSize', type=int, default=3, help='input batch size')
+        # self.parser.add_argument('--batchSize', type=int, default=8, help='input batch size')
         self.parser.add_argument('--randomScale', action='store_false', default=True, help='whether to do random scale before crop')
         self.parser.add_argument('--fineSize', type=int, default=448, help='then crop to this size')
         self.parser.add_argument('--label_nc', type=int, default=4, help='# of input label channels')
@@ -37,8 +34,6 @@ class BaseOptions():
 
         # for setting inputs
         self.parser.add_argument('--dataroot', type=str, default='./Datasets/ProstatePair/')
-        # self.parser.add_argument('--resize_or_crop', type=str, default='resize_and_crop',
-        #                          help='scaling and cropping of images at load time [resize_and_crop|crop|scale_width|scale_width_and_crop]')
         self.parser.add_argument('--serial_batches', action='store_true',
                                  help='if true, takes images in order to make batches, otherwise takes them randomly')
         self.parser.add_argument('--no_flip', action='store_true',
@@ -48,24 +43,22 @@ class BaseOptions():
                                  help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
 
         # for displays
-        self.parser.add_argument('--display_winsize', type=int, default=512, help='display window size')
-        self.parser.add_argument('--tf_log', action='store_true',
-                                 help='if specified, use tensorboard logging. Requires tensorflow installed')
+        # self.parser.add_argument('--display_winsize', type=int, default=512, help='display window size')
+        # self.parser.add_argument('--tf_log', action='store_true',
+        #                          help='if specified, use tensorboard logging. Requires tensorflow installed')
 
         # pyramid parameters:
-        self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.76)  # pow(0.5,1/6))
-        self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=8)  # pow(0.5,1/6))
+        # self.parser.add_argument('--scale_factor', type=float, help='pyramid scale factor', default=0.76)  # pow(0.5,1/6))
+        # self.parser.add_argument('--stop_scale', type=float, help='how many scales you want in the training', default=8)  # pow(0.5,1/6))
         self.parser.add_argument('--noise_amp', type=float, help='addative noise cont weight', default=0.1)
-        # self.parser.add_argument('--min_size', type=int, help='image minimal size at the coarser scale', default=25)
-        # self.parser.add_argument('--max_size', type=int, help='image maximal size at the finest scale', default=256)
 
         # networks hyper parameters:
         self.parser.add_argument('--nfc', type=int, default=32)
-        self.parser.add_argument('--min_nfc', type=int, default=32)
-        self.parser.add_argument('--ker_size', type=int, help='kernel size', default=3)
-        self.parser.add_argument('--num_layer', type=int, help='number of layers', default=5)
-        self.parser.add_argument('--stride', help='stride', default=1)
-        self.parser.add_argument('--padd_size', type=int, help='net pad size', default=0)  # math.floor(opt.ker_size/2)
+        # self.parser.add_argument('--min_nfc', type=int, default=32)
+        # self.parser.add_argument('--ker_size', type=int, help='kernel size', default=3)
+        # self.parser.add_argument('--num_layer', type=int, help='number of layers', default=5)
+        # self.parser.add_argument('--stride', help='stride', default=1)
+        # self.parser.add_argument('--padd_size', type=int, help='net pad size', default=0)  # math.floor(opt.ker_size/2)
 
 
         # for generator
@@ -86,19 +79,19 @@ class BaseOptions():
         self.parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 
         # for instance-wise features
-        self.parser.add_argument('--no_instance', action='store_true',
-                                 help='if specified, do *not* add instance map as input')
-        self.parser.add_argument('--instance_feat', action='store_true',
-                                 help='if specified, add encoded instance features as input')
-        self.parser.add_argument('--label_feat', action='store_true',
-                                 help='if specified, add encoded label features as input')
-        self.parser.add_argument('--feat_num', type=int, default=3, help='vector length for encoded features')
-        self.parser.add_argument('--load_features', action='store_true',
-                                 help='if specified, load precomputed feature maps')
-        self.parser.add_argument('--n_downsample_E', type=int, default=4, help='# of downsampling layers in encoder')
-        self.parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
-        self.parser.add_argument('--n_clusters', type=int, default=10, help='number of clusters for features')
-
+        # self.parser.add_argument('--no_instance', action='store_true',
+        #                          help='if specified, do *not* add instance map as input')
+        # self.parser.add_argument('--instance_feat', action='store_true',
+        #                          help='if specified, add encoded instance features as input')
+        # self.parser.add_argument('--label_feat', action='store_true',
+        #                          help='if specified, add encoded label features as input')
+        # self.parser.add_argument('--feat_num', type=int, default=3, help='vector length for encoded features')
+        # self.parser.add_argument('--load_features', action='store_true',
+        #                          help='if specified, load precomputed feature maps')
+        # self.parser.add_argument('--n_downsample_E', type=int, default=4, help='# of downsampling layers in encoder')
+        # self.parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
+        # self.parser.add_argument('--n_clusters', type=int, default=10, help='number of clusters for features')
+        #
         self.initialized = True
 
     def parse(self, save=True):
@@ -111,17 +104,6 @@ class BaseOptions():
         self.opt.noise_amp_init = self.opt.noise_amp
         dir_A = '_label'
         self.opt.num_images = len(make_dataset(os.path.join(self.opt.dataroot, self.opt.phase + dir_A)))
-
-        # str_ids = self.opt.gpu_ids.split(',')
-        # self.opt.gpu_ids = []
-        # for str_id in str_ids:
-        #     id = int(str_id)
-        #     if id >= 0:
-        #         self.opt.gpu_ids.append(id)
-
-        # set gpu ids
-        # if len(self.opt.gpu_ids) > 0:
-        #     torch.cuda.set_device(self.opt.gpu_ids[0])
 
         args = vars(self.opt)
 

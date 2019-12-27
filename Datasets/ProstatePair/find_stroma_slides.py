@@ -1,7 +1,4 @@
-import numpy as np
-import skimage
 import os, sys
-import scipy.io
 root_dir = os.getcwd()
 def find_root_dir(filepath, basename):
     if os.path.basename(filepath) == basename:

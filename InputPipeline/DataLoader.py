@@ -32,7 +32,6 @@ class CustomDatasetDataLoader(BaseDataLoader):
             self.dataset,
             batch_size=batch_size,
             shuffle=shuffle,
-            # num_workers = 0)
             num_workers=int(opt.nThreads))
 
     def load_data(self):
@@ -43,10 +42,7 @@ class CustomDatasetDataLoader(BaseDataLoader):
 
 def CreateDataset(opt, fixed):
     dataset = None
-    if opt.name == "mask":
-        from InputPipeline.MaskDataset import MaskDataset as Dataset
-    else:
-        from InputPipeline.AlignedDataset import AlignedDataset as Dataset
+    from InputPipeline.AlignedDataset import AlignedDataset as Dataset
     dataset = Dataset()
 
     print("dataset [%s] was created" % (dataset.name()))

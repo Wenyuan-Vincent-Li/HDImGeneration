@@ -1,6 +1,4 @@
 from PIL import Image
-import numpy as np
-from matplotlib import pyplot as plt
 import csv
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.getcwd())))
@@ -45,43 +43,3 @@ with open(os.path.join(image_folder, "Grade.csv"), newline='') as csvfile:
                     crop_label_fine = Image.fromarray(crop_label_fine)
                     crop_label_fine.save("train_label_fine/" + name + "_sementic.png")
                     train_id += 1
-
-
-
-# file_names = files_under_folder_with_suffix(image_folder, suffix = '.bmp')
-# train_image_names = []
-# train_anno_names = []
-# testA_image_names = []
-# testA_anno_names = []
-# testB_image_names = []
-# testB_anno_names = []
-# for i in file_names:
-#     if "train" in i and "anno" not in i:
-#         train_image_names.append(i)
-#     elif "train" in i:
-#         train_anno_names.append(i)
-#     elif "testA" in i and "anno" not in i:
-#         testA_image_names.append(i)
-#     elif "testA" in i:
-#         testA_anno_names.append(i)
-#     elif "testB" in i and "anno" not in i:
-#         testB_image_names.append(i)
-#     elif "testB" in i:
-#         testB_anno_names.append(i)
-#
-# for i in train_image_names[10:]:
-#     im = Image.open(os.path.join(image_folder, i))
-#     im = np.array(im)
-#     print(im.shape)
-#     plt.imshow(im)
-#     plt.show()
-#     break
-#
-# for i in train_anno_names[10:]:
-#     im = Image.open(os.path.join(image_folder, i))
-#     im = np.array(im)
-#     print(np.unique(im))
-#     print(im.shape)
-#     plt.imshow(im)
-#     plt.show()
-#     break

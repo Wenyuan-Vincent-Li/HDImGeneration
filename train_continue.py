@@ -8,7 +8,7 @@ opt.name = 'prostateHD'
 opt.scale_factor = 0.87
 opt.niter = 200
 opt.noise_amp = 1
-Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
+Gs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
 
 reals = reals + [[1024, 1024]]
-train(opt, Gs, Zs, NoiseAmp, reals)
+train(opt, Gs, NoiseAmp, reals)
