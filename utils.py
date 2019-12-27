@@ -40,7 +40,7 @@ def display_sementic(image, segmentation_mask, num_classes=int(6),
                      title="", figsize=(16, 16), ax=None):
     label_colours = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0), (0, 1, 1), (1, 1, 1)]
 
-    ## 0/stroma : red; 1/low-grade: green; 2/high-grade: blue 3/benign: yellow
+    ## red, green, blue, yellow, cyan, white
 
     if not ax:
         _, ax = plt.subplots(1, figsize=figsize)

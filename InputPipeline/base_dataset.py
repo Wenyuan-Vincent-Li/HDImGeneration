@@ -61,6 +61,7 @@ def get_transform(opt, params, method=Image.BICUBIC, normalize=True, fixed = Fal
         ## Finally scale down to the current levle
         transform_list.append(transforms.Lambda(lambda img: __scale_width(img, opt.reals[opt.scale_num][0], method)))
 
+
     if normalize:
         transform_list += [transforms.ToTensor()]
         transform_list += [transforms.Normalize((0.5, 0.5, 0.5),
