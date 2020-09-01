@@ -40,7 +40,7 @@ N = len(dataset.A_paths)
 if random:
     n = np.random.randint(N)
 else:
-    n = 8
+    n = 250
 
 data = dataset[n]
 _, im_x, im_y = data['label'].shape
