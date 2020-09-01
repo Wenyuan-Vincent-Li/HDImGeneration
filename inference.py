@@ -10,7 +10,7 @@ from Training.imresize import imresize
 opt = TrainOptions().parse()
 opt.alpha = 1 ## coefficient of  reconstruction loss
 opt.name = "prostateHD"
-opt.dataroot = './Datasets/ColonPair_Fine/'
+opt.dataroot = './Datasets/ProstatePair/'
 opt.label_nc = 6
 opt.scale_factor = 0.88
 save_every_scale = True
