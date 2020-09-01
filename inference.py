@@ -14,8 +14,6 @@ opt.dataroot = './Datasets/ColonPair_Fine/'
 opt.label_nc = 6
 opt.scale_factor = 0.88
 save_every_scale = True
-signature = 100
-signature = str(signature).zfill(4)
 label_manipulate = False
 
 Gs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
@@ -33,7 +31,7 @@ except OSError:
     pass
 
 
-random = True
+random = False
 dataset = CreateDataset(opt, fixed=True)
 N = len(dataset.A_paths)
 
@@ -41,6 +39,9 @@ if random:
     n = np.random.randint(N)
 else:
     n = 250
+
+signature = n
+signature = str(signature).zfill(4)
 
 data = dataset[n]
 _, im_x, im_y = data['label'].shape
