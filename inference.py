@@ -24,12 +24,6 @@ opt.mode = 'train'
 opt.scale_num = len(Gs) - 1
 
 opt.out = functions.generate_dir2save(opt)  # TrainedModels/path_01/scale_factor=0.750000,alpha=10
-dir2save = '%s/RandomSamples/%s/gen_start_scale=%d_%s' % (opt.out, opt.name, 0, signature)
-try:
-    os.makedirs(dir2save)
-except OSError:
-    pass
-
 
 random = False
 dataset = CreateDataset(opt, fixed=True)
@@ -42,6 +36,11 @@ else:
 
 signature = n
 signature = str(signature).zfill(4)
+dir2save = '%s/RandomSamples/%s/gen_start_scale=%d_%s' % (opt.out, opt.name, 0, signature)
+try:
+    os.makedirs(dir2save)
+except OSError:
+    pass
 
 data = dataset[n]
 _, im_x, im_y = data['label'].shape
