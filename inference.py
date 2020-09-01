@@ -8,11 +8,11 @@ from InputPipeline.DataLoader import CreateDataset
 from Training.imresize import imresize
 
 opt = TrainOptions().parse()
-opt.alpha = 0.1 ## coefficient of  reconstruction loss
-opt.name = "colon_fine"
+opt.alpha = 1 ## coefficient of  reconstruction loss
+opt.name = "prostateHD"
 opt.dataroot = './Datasets/ColonPair_Fine/'
 opt.label_nc = 6
-opt.scale_factor = 2.00
+opt.scale_factor = 0.88
 save_every_scale = True
 signature = 100
 signature = str(signature).zfill(4)
@@ -33,7 +33,7 @@ except OSError:
     pass
 
 
-random = True
+random = False
 dataset = CreateDataset(opt, fixed=True)
 N = len(dataset.A_paths)
 
