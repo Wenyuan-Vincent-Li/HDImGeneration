@@ -33,7 +33,7 @@ except OSError:
     pass
 
 
-random = False
+random = True
 dataset = CreateDataset(opt, fixed=True)
 N = len(dataset.A_paths)
 
