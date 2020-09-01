@@ -8,7 +8,7 @@ from InputPipeline.DataLoader import CreateDataset
 from Training.imresize import imresize
 
 opt = TrainOptions().parse()
-opt.alpha = 0.1 ## Not to use reconstruction loss
+opt.alpha = 0.1 ## coefficient of  reconstruction loss
 opt.name = "colon_fine"
 opt.dataroot = './Datasets/ColonPair_Fine/'
 opt.label_nc = 6
