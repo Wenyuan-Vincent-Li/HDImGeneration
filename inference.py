@@ -8,11 +8,11 @@ from InputPipeline.DataLoader import CreateDataset
 from Training.imresize import imresize
 
 opt = TrainOptions().parse()
-opt.alpha = 1 ## coefficient of  reconstruction loss
+opt.alpha = 0 ## coefficient of  reconstruction loss
 opt.name = "prostateHD"
 opt.dataroot = './Datasets/ProstatePair/'
 opt.label_nc = 6
-opt.scale_factor = 0.88
+opt.scale_factor = 0.87
 save_every_scale = True
 label_manipulate = False
 
@@ -25,14 +25,14 @@ opt.scale_num = len(Gs) - 1
 
 opt.out = functions.generate_dir2save(opt)  # TrainedModels/path_01/scale_factor=0.750000,alpha=10
 
-random = True
+random = False
 dataset = CreateDataset(opt, fixed=True)
 N = len(dataset.A_paths)
 
 if random:
     n = np.random.randint(N)
 else:
-    n = 238
+    n = 50
 
 signature = n
 signature = str(signature).zfill(4)
