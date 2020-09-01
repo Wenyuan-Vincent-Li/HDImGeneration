@@ -12,7 +12,7 @@ opt.alpha = 0 ## coefficient of  reconstruction loss
 opt.name = "prostateHD"
 opt.dataroot = './Datasets/ProstatePair/'
 opt.label_nc = 6
-opt.scale_factor = 0.87
+opt.scale_factor = 0.89
 save_every_scale = True
 label_manipulate = False
 
