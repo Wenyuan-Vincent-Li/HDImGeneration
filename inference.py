@@ -32,7 +32,7 @@ N = len(dataset.A_paths)
 if random:
     n = np.random.randint(N)
 else:
-    n = 2
+    n = 238
 
 signature = n
 signature = str(signature).zfill(4)
