@@ -25,7 +25,7 @@ opt.scale_num = len(Gs) - 1
 
 opt.out = functions.generate_dir2save(opt)  # TrainedModels/path_01/scale_factor=0.750000,alpha=10
 
-random = False
+random = True
 dataset = CreateDataset(opt, fixed=True)
 N = len(dataset.A_paths)
 
